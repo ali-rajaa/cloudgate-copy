@@ -1,0 +1,62 @@
+# Publishes the CloudGate copy to GitHub Pages as a preview at
+# cloud.fixmypcperth.com, on every push to main. The site is plain HTML,
+# CSS and JavaScript in site/ (an exact copy of www.cloudgate-app.com), so
+# there is no build: tools/preview.py makes the published copy noindex and
+# switches off the Google Ads tag, then it is deployed.
+#
+# Settings > Pages > Source must be "GitHub Actions"; the custom domain
+# (cloud.fixmypcperth.com) is set in Settings > Pages. Pull requests into
+# main are checked but never deployed.
+
+name: Publish preview
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Prepare the preview
+        run: python3 tools/preview.py site _deploy
+
+      - name: Check it
+        run: |
+          if [ ! -f _deploy/index.html ]; then
+            echo "::error::site/index.html is missing, so there is nothing to publish."
+            exit 1
+          fi
+
+      - if: github.event_name != 'pull_request'
+        uses: actions/configure-pages@v6
+
+      - if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: _deploy
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
