@@ -15,6 +15,27 @@ edited and previewed.
   CloudGate traffic. The files in `site/` keep everything, so they stay a
   true copy.
 
+## Changes made in the copy (10 Nov 2026)
+
+- **Header (every page):** Features, Pricing, Cloud Tips; **Log in** and
+  **Get started** on the right.
+- **Homepage:** a "100GB free" offer above the headline, Get started free
+  and See pricing, the app badges below; a 100GB free band, then the three
+  paid plans.
+- **Pricing page (`/pricing`):** Plus, Pro and Family only (no free card),
+  monthly / yearly switch, Plus **Continue**, Pro and Family **Try free for
+  3 days** (or buy now), and under each price the trial length, price,
+  billing frequency, automatic renewal and the amount after the trial.
+- **Sign-in popup:** every Log in, Get started and plan button opens
+  Continue with Google / Apple / email, then hands over to the web app with
+  the chosen plan.
+- **Prices:** placeholders (amber blanks) until the owner gives them: set
+  them once in `site/assets/js/auth.js` (`PLANS`), and every card, the
+  pricing page and the popup update.
+- **Web app:** sign-in, billing, trials, dashboard, upgrade popups and
+  purchase tracking happen in my.cloudgate-app.com: see
+  `WEBAPP-HANDOFF.md`.
+
 ## One-time setup (owner)
 
 1. GitHub > `ali-rajaa/cloudgate-copy` > Settings > Pages > Source:
