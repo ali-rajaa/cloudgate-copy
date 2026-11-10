@@ -11,6 +11,9 @@ for the real site:
   visits to the preview are never counted as CloudGate traffic or
   conversions, and nothing on a page breaks for want of gtag().
 
+It also adds /prototype/ (from prototype/), drawings of the web app's new
+screens for whoever builds them; it is never part of the real site.
+
 Usage: python3 tools/preview.py site _deploy
 """
 import pathlib
@@ -22,6 +25,12 @@ src, out = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2])
 if out.exists():
     shutil.rmtree(out)
 shutil.copytree(src, out)
+
+# Drawings of the web app's new screens for its developer (preview only,
+# never part of the real site): /prototype/.
+proto = pathlib.Path(__file__).resolve().parent.parent / "prototype"
+if proto.is_dir():
+    shutil.copytree(proto, out / "prototype")
 
 TAG = re.compile(r"<!-- Google tag \(gtag\.js\)[^>]*-->\s*<script>.*?</script>", re.S)
 STUB = ("<!-- Preview: Google tag switched off -->\n"

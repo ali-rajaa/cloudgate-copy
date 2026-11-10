@@ -244,6 +244,94 @@
     open({ mode: kind === 'login' ? 'login' : 'signup', plan: plan, trial: trial });
   });
 
+  /* ---------- Special offer: Pro free for 3 days ----------
+     One offer, shown at most once per visitor (and never once they have
+     opened the sign-in popup), only on pages with plan cards: after 40
+     seconds there, or when a desktop pointer heads for the tabs. It shows
+     the same terms as the plan cards. ?offer=show shows it straight away
+     (for checking it). */
+  var OFFER_KEY = 'cg-offer-seen';
+  var offer, offerLast, offerDone = false;
+  function offerSeen() { try { return localStorage.getItem(OFFER_KEY) === '1'; } catch (e) { return true; } }
+  function markOffer() { offerDone = true; try { localStorage.setItem(OFFER_KEY, '1'); } catch (e) {} }
+
+  function buildOffer() {
+    offer = doc.createElement('div');
+    offer.className = 'auth-modal offer-modal';
+    offer.hidden = true;
+    offer.innerHTML =
+      '<div class="auth-backdrop" data-offer-close></div>' +
+      '<div class="auth-panel" role="dialog" aria-modal="true" aria-labelledby="offer-title" aria-describedby="offer-sub">' +
+        '<button class="auth-x" type="button" data-offer-close aria-label="Close">' + ICON_X + '</button>' +
+        '<img class="auth-logo" src="/assets/img/cg-mark-128.webp" alt="" width="44" height="44">' +
+        '<h2 class="auth-title" id="offer-title">Try Pro free for ' + TRIAL_DAYS + ' days</h2>' +
+        '<p class="auth-sub" id="offer-sub">' + PLANS.pro.storage + ' for your photos, videos and files: five times the free 100GB.</p>' +
+        '<div class="auth-plan" data-offer-plan></div>' +
+        '<div class="offer-actions">' +
+          '<a class="btn btn-primary btn-lg" href="#" data-offer-go>Try free for ' + TRIAL_DAYS + ' days</a>' +
+          '<button class="offer-no" type="button" data-offer-close>No thanks</button>' +
+        '</div>' +
+      '</div>';
+    doc.body.appendChild(offer);
+    offer.addEventListener('click', function (e) {
+      if (e.target.closest('[data-offer-close]')) { closeOffer(true); return; }
+      var go = e.target.closest('[data-offer-go]');
+      if (go && !(e.metaKey || e.ctrlKey || e.shiftKey || e.button > 0)) {
+        e.preventDefault();
+        track('select_plan', { plan: 'pro', billing: billing, trial: true, source: 'offer' });
+        closeOffer(false);
+        open({ mode: 'signup', plan: 'pro', trial: true });
+      }
+    });
+    doc.addEventListener('keydown', function (e) {
+      if (offer.hidden) return;
+      if (e.key === 'Escape') { e.preventDefault(); closeOffer(true); return; }
+      if (e.key !== 'Tab') return;
+      var f = offer.querySelectorAll('.auth-panel a[href],.auth-panel button');
+      var first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && doc.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && doc.activeElement === last) { e.preventDefault(); first.focus(); }
+    });
+  }
+
+  function showOffer(force) {
+    if (!force && (offerDone || offerSeen())) return;
+    if (modal && !modal.hidden) return;
+    if (doc.querySelector('.menu-toggle[aria-expanded="true"]')) return;
+    if (!offer) buildOffer();
+    markOffer();
+    offer.querySelector('[data-offer-plan]').innerHTML = planSummary('pro', true);
+    offer.querySelector('[data-offer-go]').setAttribute('href', webappUrl({ mode: 'signup', plan: 'pro', billing: billing, trial: true }));
+    offerLast = doc.activeElement;
+    offer.hidden = false;
+    doc.body.classList.add('auth-open');
+    offer.querySelector('[data-offer-go]').focus();
+    track('view_promotion', { promotion_id: 'pro-trial', plan: 'pro' });
+  }
+
+  function closeOffer(returnFocus) {
+    if (!offer || offer.hidden) return;
+    offer.hidden = true;
+    doc.body.classList.remove('auth-open');
+    if (returnFocus && offerLast && offerLast.focus) offerLast.focus();
+  }
+
+  (function () {
+    var force = false;
+    try { force = new URLSearchParams(location.search).get('offer') === 'show'; } catch (e) {}
+    if (force) { setTimeout(function () { showOffer(true); }, 300); return; }
+    if (!doc.querySelector('[data-auth="plan"]') || offerSeen()) return;
+    /* Opening the sign-in popup means they are already on their way. */
+    doc.addEventListener('click', function (e) { if (e.target.closest('[data-auth]')) offerDone = true; });
+    var started = Date.now();
+    setTimeout(function () { if (!doc.hidden) showOffer(); }, 40000);
+    if (window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      doc.addEventListener('mouseout', function (e) {
+        if (!e.relatedTarget && e.clientY <= 0 && Date.now() - started > 8000) showOffer();
+      });
+    }
+  })();
+
   /* /pricing?billing=yearly opens the page on yearly prices. */
   try {
     var qp = new URLSearchParams(location.search);

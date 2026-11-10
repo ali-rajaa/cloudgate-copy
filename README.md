@@ -32,9 +32,14 @@ edited and previewed.
 - **Prices:** placeholders (amber blanks) until the owner gives them: set
   them once in `site/assets/js/auth.js` (`PLANS`), and every card, the
   pricing page and the popup update.
+- **Special offer:** pages with plan cards offer "Try Pro free for 3 days"
+  once per visitor (after 40 seconds, or when a desktop pointer heads for
+  the tabs), with the full trial terms. Add `?offer=show` to a page's
+  address to see it straight away.
 - **Web app:** sign-in, billing, trials, dashboard, upgrade popups and
   purchase tracking happen in my.cloudgate-app.com: see
-  `WEBAPP-HANDOFF.md`.
+  `WEBAPP-HANDOFF.md`, and the drawings of those screens at `/prototype/`
+  on the preview (from `prototype/`; never part of the real site).
 
 ## One-time setup (owner)
 

@@ -8,6 +8,12 @@ building there.
 **The flow:** Website → Pricing → Select plan → Log in / Sign up → Payment
 or billing details → Dashboard.
 
+**Drawings of the screens:** https://cloud.fixmypcperth.com/prototype/
+(source: `prototype/index.html`) shows the trial billing step, the Plus
+payment step, the dashboard (free and on a trial) and the upgrade popup,
+with the wording each one needs. They are drawings only: nothing there
+signs in or takes payment.
+
 ## 1. Links the website sends (read these on arrival)
 
 Every Log in, Get started and plan button opens a popup on the website
@@ -98,7 +104,9 @@ with one primary button. Do not show one more than once per session.
 The website sends these Google tag events (to the CloudGate Ads tag) when a
 visitor acts on the website: `select_plan`, `select_billing`,
 `sign_up_start`, `login_start`, `sign_up_continue`, `login_continue`,
-`begin_trial`, `begin_checkout`. These are intentions, not results.
+`begin_trial`, `begin_checkout`, and `view_promotion` when the website's
+one-off "Try Pro free for 3 days" offer is shown (a click on it sends
+`select_plan` with `source: offer`). These are intentions, not results.
 
 The results must be reported by the web app, after they really happen:
 
