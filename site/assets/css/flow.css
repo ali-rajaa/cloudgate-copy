@@ -63,7 +63,11 @@
 
 /* ---------- Price cards ---------- */
 .price-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s-5);align-items:stretch;}
-@media (max-width:960px){ .price-grid{grid-template-columns:1fr;max-width:30rem;margin-inline:auto;} }
+@media (max-width:960px){
+  .price-grid{grid-template-columns:1fr;max-width:30rem;margin-inline:auto;}
+  /* Stacked: room for the Best value flag above Pro. */
+  .price-card--best{margin-top:calc(var(--fs-xs) * 1.5 + 12px);}
+}
 .price-card{
   position:relative;display:flex;flex-direction:column;
   padding:var(--s-6) var(--s-5) var(--s-5);border-radius:var(--r-panel);
