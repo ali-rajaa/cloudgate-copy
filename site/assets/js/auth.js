@@ -122,12 +122,12 @@
         '</div>' +
         '<div class="auth-or">or</div>' +
         '<form class="auth-form" novalidate>' +
-          '<label for="auth-email">Email</label>' +
-          '<input id="auth-email" name="email" type="email" autocomplete="email" inputmode="email" required>' +
-          '<button class="btn btn-primary btn-lg" type="submit">Continue</button>' +
+          '<label class="sr-only" for="auth-email">Email address</label>' +
+          '<input id="auth-email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="Email address" required>' +
+          '<button class="btn btn-primary" type="submit">Continue with email</button>' +
         '</form>' +
         '<p class="auth-switch" data-auth-switch></p>' +
-        '<p class="auth-legal">By continuing you agree to our <a href="/terms-of-service">Terms of Service</a> and <a href="/privacy-policy">Privacy Policy</a>.</p>' +
+        '<p class="auth-legal">By continuing you agree to the <a href="/terms-of-service">Terms</a> and <a href="/privacy-policy">Privacy Policy</a>.</p>' +
         '<p class="auth-apps">Prefer the app? <a href="https://play.google.com/store/apps/details?id=com.cloudgate.cloudstorage&amp;hl=en_AU" target="_blank" rel="noopener">Google Play</a> · <a href="https://apps.apple.com/us/app/cloudgate-cloud-storage-app/id6504859413" target="_blank" rel="noopener">App Store</a></p>' +
       '</div>';
     doc.body.appendChild(modal);
@@ -170,24 +170,25 @@
     });
   }
 
+  /* The plan, what is due today and later, and the terms: trial length
+     and end date, price and how often, auto-renewal, how to avoid a charge. */
   function planSummary(plan, withTrial) {
     var P = PLANS[plan];
     var price = priceText(plan, billing);
     var priceHtml = price ? price : '<span class="price-tbd">' + CURRENCY + ' –</span>';
-    var rows = '<div><dt>Billing</dt><dd>' + (billing === 'yearly' ? 'Yearly' : 'Monthly') + '</dd></div>';
-    if (withTrial) {
-      var end = trialEnd();
-      rows += '<div><dt>Due today</dt><dd>' + CURRENCY + '0.00</dd></div>' +
-              '<div><dt>From ' + end + '</dt><dd>' + priceHtml + perText(billing) + '</dd></div>';
-    } else {
-      rows += '<div><dt>Due today</dt><dd>' + priceHtml + '</dd></div>';
-    }
+    var per = perText(billing);
+    var end = trialEnd();
+    var rows = withTrial
+      ? '<div><dt>Due today</dt><dd>' + CURRENCY + '0.00</dd></div>' +
+        '<div><dt>From ' + end + '</dt><dd>' + priceHtml + per + '</dd></div>'
+      : '<div><dt>Due today</dt><dd>' + priceHtml + '</dd></div>' +
+        '<div><dt>Then</dt><dd>' + priceHtml + per + '</dd></div>';
     var tail = withTrial
-      ? 'Your ' + TRIAL_DAYS + '-day free trial starts once your payment details are saved. After it ends on ' + trialEnd() +
-        ' you’ll be charged ' + (price || CURRENCY + '[price]') + ' ' + cycleWord(billing) +
-        ', renewing automatically until you cancel. Cancel before then and you won’t be charged.'
-      : 'You’ll pay on the next step. Renews automatically ' + cycleWord(billing) + ' until you cancel.';
-    return '<div class="auth-plan-head"><span>CloudGate ' + P.name + '</span><span>' + P.storage + '</span></div>' +
+      ? 'Free for ' + TRIAL_DAYS + ' days, then billed ' + cycleWord(billing) + '. Payment details are needed to start the trial. ' +
+        'Renews automatically until you cancel; cancel before ' + end + ' and you won’t be charged.'
+      : 'Billed ' + cycleWord(billing) + ' from today. Renews automatically until you cancel.';
+    return '<div class="auth-plan-head"><span>CloudGate ' + P.name + ' · ' + P.storage + '</span>' +
+           '<span>Billed ' + cycleWord(billing) + '</span></div>' +
            '<dl>' + rows + '</dl><p>' + tail + '</p>';
   }
 
@@ -199,8 +200,8 @@
     var box = modal.querySelector('[data-auth-plan]');
     if (state.plan) {
       var P = PLANS[state.plan];
-      title.textContent = state.trial ? 'Start your ' + TRIAL_DAYS + '-day ' + P.name + ' trial' : 'Get CloudGate ' + P.name;
-      sub.textContent = 'Log in or sign up to continue';
+      title.textContent = state.trial ? 'Try ' + P.name + ' free for ' + TRIAL_DAYS + ' days' : 'Get CloudGate ' + P.name;
+      sub.textContent = state.trial ? 'Log in or sign up to start.' : 'Log in or sign up, then pay.';
       box.innerHTML = planSummary(state.plan, state.trial);
       box.hidden = false;
     } else {
@@ -208,6 +209,7 @@
       sub.textContent = state.mode === 'login' ? 'Welcome back' : 'Sign up free and get 100GB of storage. No card needed.';
       box.hidden = true;
     }
+    modal.classList.toggle('auth-modal--plan', !!state.plan);
     modal.querySelectorAll('[data-provider]').forEach(function (a) {
       a.setAttribute('href', webappUrl({ mode: state.mode, provider: a.getAttribute('data-provider'), plan: state.plan, billing: billing, trial: state.trial }));
     });
