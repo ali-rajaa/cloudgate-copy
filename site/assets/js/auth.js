@@ -110,7 +110,7 @@
     modal.hidden = true;
     modal.innerHTML =
       '<div class="auth-backdrop" data-auth-close></div>' +
-      '<div class="auth-panel" role="dialog" aria-modal="true" aria-labelledby="auth-title" aria-describedby="auth-sub">' +
+      '<div class="auth-panel" role="dialog" aria-modal="true" aria-labelledby="auth-title" aria-describedby="auth-sub" tabindex="-1">' +
         '<button class="auth-x" type="button" data-auth-close aria-label="Close">' + ICON_X + '</button>' +
         '<img class="auth-logo" src="/assets/img/cg-mark-128.webp" alt="" width="44" height="44">' +
         '<h2 class="auth-title" id="auth-title"></h2>' +
@@ -163,9 +163,9 @@
       if (modal.hidden) return;
       if (e.key === 'Escape') { e.preventDefault(); close(); return; }
       if (e.key !== 'Tab') return;
-      var f = panel.querySelectorAll('a[href],button:not([disabled]),input');
+      var f = Array.prototype.filter.call(panel.querySelectorAll('a[href],button:not([disabled]),input'), function (x) { return x.offsetParent !== null; });
       var first = f[0], last = f[f.length - 1];
-      if (e.shiftKey && doc.activeElement === first) { e.preventDefault(); last.focus(); }
+      if (e.shiftKey && (doc.activeElement === first || doc.activeElement === panel)) { e.preventDefault(); last.focus(); }
       else if (!e.shiftKey && doc.activeElement === last) { e.preventDefault(); first.focus(); }
     });
   }
@@ -184,8 +184,8 @@
       : '<div><dt>Due today</dt><dd>' + priceHtml + '</dd></div>' +
         '<div><dt>Then</dt><dd>' + priceHtml + per + '</dd></div>';
     var tail = withTrial
-      ? 'Free for ' + TRIAL_DAYS + ' days, then billed ' + cycleWord(billing) + '. Payment details are needed to start the trial. ' +
-        'Renews automatically until you cancel; cancel before ' + end + ' and you won’t be charged.'
+      ? 'Free for ' + TRIAL_DAYS + ' days, then billed ' + cycleWord(billing) + '. Payment details are needed to start. ' +
+        'Renews automatically until you cancel. Cancel before ' + end + ' and you won’t be charged.'
       : 'Billed ' + cycleWord(billing) + ' from today. Renews automatically until you cancel.';
     return '<div class="auth-plan-head"><span>CloudGate ' + P.name + ' · ' + P.storage + '</span>' +
            '<span>Billed ' + cycleWord(billing) + '</span></div>' +
@@ -219,8 +219,7 @@
     if (!keepFocus) lastFocus = doc.activeElement;
     modal.hidden = false;
     doc.body.classList.add('auth-open');
-    var firstBtn = modal.querySelector('[data-provider]');
-    if (firstBtn) firstBtn.focus();
+    panel.focus();
   }
 
   function close() {
@@ -263,7 +262,7 @@
     offer.hidden = true;
     offer.innerHTML =
       '<div class="auth-backdrop" data-offer-close></div>' +
-      '<div class="auth-panel" role="dialog" aria-modal="true" aria-labelledby="offer-title" aria-describedby="offer-sub">' +
+      '<div class="auth-panel" role="dialog" aria-modal="true" aria-labelledby="offer-title" aria-describedby="offer-sub" tabindex="-1">' +
         '<button class="auth-x" type="button" data-offer-close aria-label="Close">' + ICON_X + '</button>' +
         '<img class="auth-logo" src="/assets/img/cg-mark-128.webp" alt="" width="44" height="44">' +
         '<h2 class="auth-title" id="offer-title">Try Pro free for ' + TRIAL_DAYS + ' days</h2>' +
@@ -291,7 +290,7 @@
       if (e.key !== 'Tab') return;
       var f = offer.querySelectorAll('.auth-panel a[href],.auth-panel button');
       var first = f[0], last = f[f.length - 1];
-      if (e.shiftKey && doc.activeElement === first) { e.preventDefault(); last.focus(); }
+      if (e.shiftKey && (doc.activeElement === first || doc.activeElement === offer.querySelector('.auth-panel'))) { e.preventDefault(); last.focus(); }
       else if (!e.shiftKey && doc.activeElement === last) { e.preventDefault(); first.focus(); }
     });
   }
@@ -307,7 +306,7 @@
     offerLast = doc.activeElement;
     offer.hidden = false;
     doc.body.classList.add('auth-open');
-    offer.querySelector('[data-offer-go]').focus();
+    offer.querySelector('.auth-panel').focus();
     track('view_promotion', { promotion_id: 'pro-trial', plan: 'pro' });
   }
 
