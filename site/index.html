@@ -30,10 +30,10 @@
 <script>(function(d){d.classList.add('js');try{var t=localStorage.getItem('cg-theme');if(t==='light'||t==='dark'){d.setAttribute('data-theme',t);document.querySelectorAll('meta[name="theme-color"]').forEach(function(m){m.content=t==='dark'?'#0B0D14':'#F5F7FE'})}}catch(e){}})(document.documentElement)</script>
 <link rel="preload" href="/assets/fonts/inter-var-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/css/site.css?v=1793102531">
-<link rel="stylesheet" href="/assets/css/flow.css?v=1794319049">
+<link rel="stylesheet" href="/assets/css/flow.css?v=1794319050">
 <link rel="stylesheet" href="/assets/css/home.css?v=1794319044">
 <script src="/assets/js/site.js?v=1793102531" defer></script>
-<script src="/assets/js/auth.js?v=1794319049" defer></script>
+<script src="/assets/js/auth.js?v=1794319050" defer></script>
 
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -413,12 +413,12 @@
           </div>
           <div class="pcard-price">
             <p class="price-amt"><span class="price-num" data-price="plus">A$6.96</span><span class="price-per" data-per>/month</span></p>
-            <p class="pcard-billed" data-billed-in>Billed in AUD</p>
+            <p class="pcard-meta"><span data-billed-in>Billed in AUD</span></p>
           </div>
           <div class="price-actions">
             <a href="https://my.cloudgate-app.com/?mode=signup&amp;plan=plus&amp;billing=monthly&amp;source=website" class="btn btn-primary btn-lg" data-auth="plan" data-plan="plus">Choose Plus<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
           </div>
-          <p class="price-terms" data-terms="plus">A$6.96 per month, billed monthly from today. Renews automatically until you cancel.</p>
+          <p class="price-terms" data-terms="plus">A$6.96 per month from today. Renews automatically until you cancel.</p>
           <ul class="price-feats" role="list"><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span>High speed cloud storage</span></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span>End to end encryption support</span></li></ul>
         </section>
         <section class="pcard pcard--best reveal" aria-labelledby="plan-pro">
@@ -429,14 +429,13 @@
           </div>
           <div class="pcard-price">
             <p class="price-amt"><span class="price-num" data-price="pro">A$9.75</span><span class="price-per" data-per>/month</span></p>
-            <p class="pcard-billed" data-billed-in>Billed in AUD</p>
-            <p class="price-trial">3-day free trial</p>
+            <p class="pcard-meta"><span data-billed-in>Billed in AUD</span><span class="pcard-trial">3-day free trial</span></p>
           </div>
           <div class="price-actions">
             <a href="https://my.cloudgate-app.com/?mode=signup&amp;plan=pro&amp;billing=monthly&amp;trial=3&amp;source=website" class="btn btn-primary btn-lg" data-auth="plan" data-plan="pro" data-trial>Try Pro free for 3 days<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
             <a href="https://my.cloudgate-app.com/?mode=signup&amp;plan=pro&amp;billing=monthly&amp;source=website" class="price-buy" data-auth="plan" data-plan="pro">or buy now<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
           </div>
-          <p class="price-terms" data-terms="pro">Free for 3 days, then A$9.75 per month, billed monthly. Your payment details are needed to start the trial. Renews automatically until you cancel; cancel before the trial ends and you won’t be charged.</p>
+          <p class="price-terms" data-terms="pro">Free for 3 days, then A$9.75 per month. Your payment details are needed to start the trial. Renews automatically until you cancel; cancel before the trial ends and you won’t be charged.</p>
           <ul class="price-feats" role="list"><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span>High speed cloud storage</span></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span>End to end encryption support</span></li></ul>
         </section>
         <section class="pcard pcard--family reveal" aria-labelledby="plan-family" data-family-card>
@@ -451,14 +450,13 @@
           </div>
           <div class="pcard-price">
             <p class="price-amt"><span class="price-num" data-price="family">A$20.92</span><span class="price-per" data-per>/month</span></p>
-            <p class="pcard-billed" data-billed-in>Billed in AUD</p>
-            <p class="price-trial">3-day free trial</p>
+            <p class="pcard-meta"><span data-billed-in>Billed in AUD</span><span class="pcard-trial">3-day free trial</span></p>
           </div>
           <div class="price-actions">
             <a href="https://my.cloudgate-app.com/?mode=signup&amp;plan=family&amp;billing=monthly&amp;size=5tb&amp;trial=3&amp;source=website" class="btn btn-lg pcard-cta-light" data-auth="plan" data-plan="family" data-trial>Try Family free for 3 days<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
             <a href="https://my.cloudgate-app.com/?mode=signup&amp;plan=family&amp;billing=monthly&amp;size=5tb&amp;source=website" class="price-buy" data-auth="plan" data-plan="family">or buy now<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
           </div>
-          <p class="price-terms" data-terms="family">Free for 3 days, then A$20.92 per month, billed monthly. Your payment details are needed to start the trial. Renews automatically until you cancel; cancel before the trial ends and you won’t be charged.</p>
+          <p class="price-terms" data-terms="family">Free for 3 days, then A$20.92 per month. Your payment details are needed to start the trial. Renews automatically until you cancel; cancel before the trial ends and you won’t be charged.</p>
           <ul class="price-feats" role="list"><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span>High speed cloud storage</span></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span>End to end encryption support</span></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span>Share with up to 5 family members</span></li><li data-5tb-only><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span>Room for large video libraries, full-resolution archives and backups for the whole family</span></li></ul>
         </section>
       </div>

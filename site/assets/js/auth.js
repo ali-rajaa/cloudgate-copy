@@ -138,11 +138,11 @@
     var price = priceText(plan, cycle, size) || currency + ' [price]';
     var every = cycle === 'yearly' ? 'year' : 'month';
     if (withTrial) {
-      return 'Free for ' + TRIAL_DAYS + ' days, then ' + price + ' per ' + every + ', billed ' + cycleWord(cycle) +
+      return 'Free for ' + TRIAL_DAYS + ' days, then ' + price + ' per ' + every +
         '. Your payment details are needed to start the trial. Renews automatically until you cancel; ' +
         'cancel before the trial ends and you won’t be charged.';
     }
-    return price + ' per ' + every + ', billed ' + cycleWord(cycle) + ' from today. Renews automatically until you cancel.';
+    return price + ' per ' + every + ' from today. Renews automatically until you cancel.';
   }
 
   function renderPrices() {
