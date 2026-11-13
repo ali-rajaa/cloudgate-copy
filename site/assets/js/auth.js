@@ -145,19 +145,53 @@
     return price + ' per ' + every + ' from today. Renews automatically until you cancel.';
   }
 
+  /* Changes after the first paint glide in (a short rise and fade), so a
+     switch of billing, currency or size reads as one smooth change. None
+     with reduced motion. */
+  var painted = false;
+  var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function setText(el, text) {
+    if (el.textContent === text) return;
+    el.textContent = text;
+    if (painted && !still && el.animate) {
+      el.animate([{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }],
+        { duration: 320, easing: 'cubic-bezier(.22,1,.36,1)' });
+    }
+  }
+  /* Yearly against twelve months, whole percent rounded down (never
+     overstated). Family 5TB has no yearly price, so it compares as 1TB. */
+  function saving(plan, size) {
+    var m = amount(plan, 'monthly', size === '5tb' ? '1tb' : size), y = amount(plan, 'yearly', size === '5tb' ? '1tb' : size);
+    if (!m || !y) return 0;
+    return Math.floor((1 - y / (12 * m)) * 100);
+  }
+
   function renderPrices() {
     doc.querySelectorAll('[data-price]').forEach(function (el) {
       var t = priceText(el.getAttribute('data-price'), billing, sizeFor(el));
-      el.textContent = t || currency + ' –';
+      setText(el, t || currency + ' –');
       el.classList.toggle('price-tbd', !t);
       if (!t) el.setAttribute('title', 'Price to come'); else el.removeAttribute('title');
     });
-    doc.querySelectorAll('[data-per]').forEach(function (el) { el.textContent = perText(billing); });
+    doc.querySelectorAll('[data-per]').forEach(function (el) { setText(el, perText(billing)); });
     doc.querySelectorAll('[data-terms]').forEach(function (el) {
       var plan = el.getAttribute('data-terms');
-      el.textContent = termsText(plan, billing, PLANS[plan].trial, sizeFor(el));
+      setText(el, termsText(plan, billing, PLANS[plan].trial, sizeFor(el)));
     });
-    doc.querySelectorAll('[data-billed-in]').forEach(function (el) { el.textContent = 'Billed in ' + currency; });
+    doc.querySelectorAll('[data-billed-in]').forEach(function (el) { setText(el, 'Billed ' + cycleWord(billing) + ' in ' + currency); });
+    /* Yearly: what it saves against paying monthly, worked out from the prices. */
+    doc.querySelectorAll('.pcard').forEach(function (card) {
+      var meta = card.querySelector('.pcard-meta'), priceEl = card.querySelector('[data-price]');
+      if (!meta || !priceEl) return;
+      var chip = meta.querySelector('.pcard-save');
+      if (!chip) {
+        chip = doc.createElement('span'); chip.className = 'pcard-save'; chip.hidden = true;
+        meta.insertBefore(chip, meta.children[1] || null);
+      }
+      var pct = billing === 'yearly' ? saving(priceEl.getAttribute('data-price'), sizeFor(priceEl)) : 0;
+      chip.hidden = pct < 1;
+      if (pct >= 1) setText(chip, 'Save ' + pct + '%');
+    });
     /* Pricing page: the Family card's size choice. */
     var fs = familySize();
     doc.querySelectorAll('[data-family-size]').forEach(function (b) {
@@ -169,9 +203,14 @@
       if (note) note.textContent = off ? 'Monthly only' : note.getAttribute('data-size-note');
     });
     doc.querySelectorAll('[data-family-card]').forEach(function (card) {
-      card.querySelectorAll('[data-storage]').forEach(function (el) { el.textContent = fs === '5tb' ? '5TB' : '1TB'; });
+      card.querySelectorAll('[data-storage]').forEach(function (el) { setText(el, fs === '5tb' ? '5TB' : '1TB'); });
+      /* One scale for every card: 5TB is the full bar, so 1TB is a fifth. */
       card.querySelectorAll('[data-bar]').forEach(function (el) { el.style.width = fs === '5tb' ? '100%' : '20%'; });
-      card.querySelectorAll('[data-5tb-only]').forEach(function (el) { el.hidden = fs !== '5tb'; });
+      card.querySelectorAll('[data-5tb-only]').forEach(function (el) {
+        var show = fs === '5tb', was = !el.hidden;
+        el.hidden = !show;
+        if (show && !was && painted && !still && el.animate) el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 280, easing: 'ease-out' });
+      });
     });
     doc.querySelectorAll('[data-bill-label]').forEach(function (el) {
       el.textContent = billing === 'yearly' ? 'Billed yearly' : 'Billed monthly';
@@ -238,6 +277,7 @@
   });
   var modal, offer, state = {};
   renderPrices();
+  painted = true;
 
   /* The visitor's country, as the web app finds it. Only on pages that
      show prices, once per visit, and never over a currency they picked. */

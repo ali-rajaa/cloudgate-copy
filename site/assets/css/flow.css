@@ -266,7 +266,7 @@ body.auth-open{overflow:hidden;}
 .prem-controls .cur-pick label{position:static;width:auto;height:auto;overflow:visible;clip:auto;font-size:var(--fs-sm);font-weight:600;color:var(--text-2);}
 .prem-controls .cur-pick select{min-height:44px;width:11rem;max-width:60%;border-radius:12px;background-color:var(--surface);border-color:var(--line-strong);}
 
-.prem-grid{margin-top:var(--s-7);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.3fr);gap:var(--s-5);align-items:stretch;}
+.prem-grid{margin-top:var(--s-7);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s-5);align-items:stretch;}
 @media (max-width:1023.98px){ .prem-grid{grid-template-columns:minmax(0,1fr);max-width:32rem;margin-inline:auto;} }
 
 .pcard{
@@ -334,4 +334,28 @@ body.auth-open{overflow:hidden;}
   .pcard{padding:22px;}
   .pcard--best{padding:21px;}
   .prem-foot .btn{width:100%;}
+}
+
+/* ---------- Plans: controls on the homepage and Features, smooth changes ---------- */
+.plans-controls{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:var(--s-3);margin-top:var(--s-6);}
+.plans-controls + .prem-grid{margin-top:var(--s-6);}
+.pcard-save{padding:2px 8px;border-radius:var(--r-pill);background:var(--blue-pale);color:var(--blue-text);font-weight:700;}
+.pcard--family .pcard-save{background:rgba(255,255,255,.14);color:#FFFFFF;}
+.pcard-save[hidden]{display:none;}
+/* The Monthly / Yearly switch: one thumb that slides between the two. */
+@supports selector(:has(*)){
+  .bill-switch{position:relative;display:inline-grid;grid-template-columns:1fr 1fr;}
+  .prem-controls .bill-switch{display:grid;}
+  .bill-switch label{display:flex;}
+  .bill-switch span{position:relative;justify-content:center;width:100%;}
+  .bill-switch::before{
+    content:"";position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 6px);
+    border-radius:var(--r-pill);background:var(--surface);box-shadow:var(--sh-1);
+    transition:transform var(--dur-spring) var(--spring);
+  }
+  .bill-switch:has(label:nth-child(2) input:checked)::before{transform:translateX(calc(100% + 4px));}
+  .bill-switch input:checked + span{background:transparent;box-shadow:none;}
+}
+@media (prefers-reduced-motion:reduce){
+  .bill-switch::before,.pcard-bar i{transition:none;}
 }
