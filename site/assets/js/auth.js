@@ -1,17 +1,20 @@
 /* CloudGate: sign-up and pricing flow (owner, 10 Nov 2026).
    Website -> Pricing -> plan -> Log in / Sign up -> payment -> dashboard.
 
-   PRICES: the one place to set them. null shows an amber blank on every
-   card and in the popup until the owner gives the figure. */
+   PRICES: the one place to set them, in Australian dollars. They are the
+   AUD prices of the web app's Stripe products cg_{plan}_{billing} (read
+   from its plan list on 13 Nov 2026), so the website shows what the web
+   app charges. null would show an amber blank instead. The pages' HTML
+   carries the monthly figures too, for the first paint; keep them equal. */
 (function () {
   'use strict';
 
   var CURRENCY = 'A$';
   var TRIAL_DAYS = 3;
   var PLANS = {
-    plus:   { name: 'Plus',   storage: '250GB', trial: false, monthly: null, yearly: null },
-    pro:    { name: 'Pro',    storage: '500GB', trial: true,  monthly: null, yearly: null },
-    family: { name: 'Family', storage: '1TB',   trial: true,  monthly: null, yearly: null }
+    plus:   { name: 'Plus',   storage: '250GB', trial: false, monthly: '6.96',  yearly: '41.84' },
+    pro:    { name: 'Pro',    storage: '500GB', trial: true,  monthly: '9.75',  yearly: '55.80' },
+    family: { name: 'Family', storage: '1TB',   trial: true,  monthly: '13.94', yearly: '97.66' }
   };
 
   /* The web app (my.cloudgate-app.com) signs people in and takes payment.

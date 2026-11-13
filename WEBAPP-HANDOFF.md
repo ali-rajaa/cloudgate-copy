@@ -121,25 +121,34 @@ Stripe webhook, with the Google Ads conversion labels the owner provides.
 
 ## 7. Prices
 
-Prices are placeholders on the website until the owner confirms them (one
-list in `site/assets/js/auth.js`, `PLANS`). Use the same figures in Stripe.
+The website shows the web app's own Stripe prices in Australian dollars,
+read from the web app's plan list (`getdetails`) on 13 Nov 2026 and picked
+the way the web app picks them (the first price above zero in the
+currency). They live in one list in `site/assets/js/auth.js`, `PLANS`.
 
-### Stripe lookup keys (from the owner, 13 Nov 2026)
-
-The lookup keys follow the website's link parameters, so the web app can
-pick the price straight from them: `cg_{plan}_{billing}`
-(`plan=pro&billing=yearly` → `cg_pro_yearly`). Prefer looking prices up
-by these keys (`prices.list` with `lookup_keys`) over hard-coding IDs.
-
-| Plan | Billing | Lookup key | ID the owner sent |
+| Plan | Stripe product | AUD | USD |
 |---|---|---|---|
-| Pro | monthly | `cg_pro_monthly` | `to_1UaYby01i6NoLKsT8CzVcD3j` |
-| Pro | yearly | `cg_pro_yearly` | `to_1UaYiY01i6NoLKsThtQmqSWB` |
-| Family | monthly | `cg_family_monthly` | `to_1UaYfH01i6NoLKsTWweJ8CBQ` |
-| Family | yearly | `cg_family_yearly` | `to_1UaYk301i6NoLKsT5JXhCiWq` |
-| Plus | monthly | `cg_plus_monthly` | not sent yet |
-| Plus | yearly | `cg_plus_yearly` | not sent yet |
+| Plus, monthly | `cg_plus_monthly` | A$6.96 | US$4.99 |
+| Plus, yearly | `cg_plus_yearly` | A$41.84 | US$29.99 |
+| Pro, monthly | `cg_pro_monthly` | A$9.75 | US$6.99 |
+| Pro, yearly | `cg_pro_yearly` | A$55.80 | US$39.99 |
+| Family, monthly | `cg_family_monthly` | A$13.94 | US$9.99 |
+| Family, yearly | `cg_family_yearly` | A$97.66 | US$69.99 |
 
-The IDs were copied from a screenshot, so check each one against the
-Stripe dashboard before using it. Stripe price IDs normally begin with
-`price_`; these begin with `to_`, which needs confirming.
+The product names match the website's link parameters:
+`plan=pro&billing=yearly` → `cg_pro_yearly`, so the web app can open the
+right checkout straight from the link.
+
+- **If a price changes in Stripe**, change it in `PLANS` too (and the
+  monthly figures in the pricing cards' HTML), or the website and the
+  checkout will disagree.
+- **Currency:** the web app charges each visitor in their local currency
+  (by location, US dollars by default); the website shows Australian
+  dollars. A visitor outside Australia sees A$ on the website and their
+  own currency at checkout, which the checkout page must state clearly.
+- Several products also hold A$0 / US$0 prices; the web app skips them.
+  Make sure the trial checkout uses the paid price with
+  `trial_period_days: 3`, not a $0 price.
+- The `to_…` IDs the owner sent on 13 Nov are not price IDs (those start
+  with `price_`); the web app doesn't need them, as it looks prices up by
+  product name.
