@@ -204,13 +204,17 @@
     });
     doc.querySelectorAll('[data-family-card]').forEach(function (card) {
       card.querySelectorAll('[data-storage]').forEach(function (el) { setText(el, fs === '5tb' ? '5TB' : '1TB'); });
-      /* One scale for every card: 5TB is the full bar, so 1TB is a fifth. */
-      card.querySelectorAll('[data-bar]').forEach(function (el) { el.style.width = fs === '5tb' ? '100%' : '20%'; });
       card.querySelectorAll('[data-5tb-only]').forEach(function (el) {
         var show = fs === '5tb', was = !el.hidden;
         el.hidden = !show;
         if (show && !was && painted && !still && el.animate) el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 280, easing: 'ease-out' });
       });
+    });
+    /* Storage bars: Family is always the full bar; Plus and Pro are drawn
+       against the Family size chosen (5TB: 5% and 10%; 1TB: 25% and 50%). */
+    var fullGb = fs === '5tb' ? 5000 : 1000;
+    doc.querySelectorAll('[data-bar-gb]').forEach(function (el) {
+      el.style.width = (Number(el.getAttribute('data-bar-gb')) / fullGb * 100) + '%';
     });
     doc.querySelectorAll('[data-bill-label]').forEach(function (el) {
       el.textContent = billing === 'yearly' ? 'Billed yearly' : 'Billed monthly';
