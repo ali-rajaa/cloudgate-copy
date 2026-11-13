@@ -28,6 +28,7 @@ choice sends the visitor to the web app's root with these parameters:
 | `plan` | `plus`, `pro`, `family` | The plan chosen on the pricing page (absent = free 100GB) |
 | `billing` | `monthly`, `yearly` | The billing cycle chosen |
 | `trial` | `3` | A 3-day free trial was chosen (only ever with `pro` or `family`) |
+| `size` | `5tb` | Family 5TB was chosen (product `cg_family_monthly_5TB`, monthly only); absent = 1TB |
 | `currency` | `AUD`, `USD`, `GBP`, … | The currency the website showed the prices in (only with `plan`); open checkout in it |
 | `source` | `website` | Came from the website |
 
@@ -153,8 +154,9 @@ same).
 | Pro, yearly | `cg_pro_yearly` | A$55.80 | $39.99 | £29.54 | €34.52 |
 | Family, monthly | `cg_family_monthly` | A$13.94 | $9.99 | £7.38 | €8.62 |
 | Family, yearly | `cg_family_yearly` | A$97.66 | $69.99 | £51.70 | €60.41 |
+| Family 5TB, monthly | `cg_family_monthly_5TB` | A$20.92 | $14.99 | £11.07 | €12.93 |
 
-(Other currencies: see `PRICES`.)
+(Other currencies: see `PRICES`. Family 5TB has no yearly price, so the website offers it on monthly billing only.)
 
 - **If a price changes in Stripe**, change it in `PRICES` too (and the AUD
   monthly figures in the cards' HTML), or the website and checkout will

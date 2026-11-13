@@ -34,6 +34,10 @@
     family: {
       monthly: { AUD: 1394, USD: 999, CAD: 1390, EUR: 862, GBP: 738, INR: 95339, PKR: 277272, AED: 3669, SAR: 3749, JPY: 1599, CNY: 6720 },
       yearly: { AUD: 9766, USD: 6999, CAD: 9736, EUR: 6041, GBP: 5170, INR: 667946, PKR: 1942572, AED: 25707, SAR: 26267, JPY: 11204, CNY: 47081 }
+    },
+    /* Family 5TB (cg_family_monthly_5TB): monthly only, no yearly price. */
+    family_5tb: {
+      monthly: { AUD: 2092, USD: 1499, CAD: 2086, EUR: 1293, GBP: 1107, INR: 143056, PKR: 416047, AED: 5505, SAR: 5625, JPY: 2399, CNY: 10083 }
     }
   };
   /* The web app's tables (premium page): country -> currency, and the
@@ -101,17 +105,24 @@
       return new Intl.NumberFormat('en', { style: 'currency', currency: cur, minimumFractionDigits: d, maximumFractionDigits: d }).format(major);
     } catch (e) { return cur + ' ' + major.toFixed(d); }
   }
-  function amount(plan, cycle) {
-    var p = PRICES[plan] && PRICES[plan][cycle];
+  /* Family comes in 1TB and 5TB (pricing page). 5TB is monthly only, so
+     on yearly billing Family is 1TB. Everywhere else Family is 1TB. */
+  var familyPick = '5tb';
+  function familySize() { return billing === 'yearly' ? '1tb' : familyPick; }
+  function sizeFor(el) { return el && el.closest && el.closest('[data-family-card]') ? familySize() : '1tb'; }
+  function storageOf(plan, size) { return plan === 'family' && size === '5tb' ? '5TB' : PLANS[plan].storage; }
+  function amount(plan, cycle, size) {
+    var key = plan === 'family' && size === '5tb' ? 'family_5tb' : plan;
+    var p = PRICES[key] && PRICES[key][cycle];
     return p && typeof p[currency] === 'number' ? p[currency] : null;
   }
-  function priceText(plan, cycle) {
-    var a = amount(plan, cycle);
+  function priceText(plan, cycle, size) {
+    var a = amount(plan, cycle, size);
     return a == null ? null : money(a, currency);
   }
   /* For Google tag events: the price in whole units. */
-  function value(plan, cycle) {
-    var a = amount(plan, cycle);
+  function value(plan, cycle, size) {
+    var a = amount(plan, cycle, size);
     return a == null ? undefined : a / Math.pow(10, decimals(currency));
   }
   function perText(cycle) { return cycle === 'yearly' ? '/year' : '/month'; }
@@ -123,8 +134,8 @@
 
   /* What the visitor agrees to, in plain words: trial length, price,
      how often, that it renews, and what is charged after the trial. */
-  function termsText(plan, cycle, withTrial) {
-    var price = priceText(plan, cycle) || currency + ' [price]';
+  function termsText(plan, cycle, withTrial, size) {
+    var price = priceText(plan, cycle, size) || currency + ' [price]';
     var every = cycle === 'yearly' ? 'year' : 'month';
     if (withTrial) {
       return 'Free for ' + TRIAL_DAYS + ' days, then ' + price + ' per ' + every + ', billed ' + cycleWord(cycle) +
@@ -136,7 +147,7 @@
 
   function renderPrices() {
     doc.querySelectorAll('[data-price]').forEach(function (el) {
-      var t = priceText(el.getAttribute('data-price'), billing);
+      var t = priceText(el.getAttribute('data-price'), billing, sizeFor(el));
       el.textContent = t || currency + ' –';
       el.classList.toggle('price-tbd', !t);
       if (!t) el.setAttribute('title', 'Price to come'); else el.removeAttribute('title');
@@ -144,20 +155,36 @@
     doc.querySelectorAll('[data-per]').forEach(function (el) { el.textContent = perText(billing); });
     doc.querySelectorAll('[data-terms]').forEach(function (el) {
       var plan = el.getAttribute('data-terms');
-      el.textContent = termsText(plan, billing, PLANS[plan].trial);
+      el.textContent = termsText(plan, billing, PLANS[plan].trial, sizeFor(el));
+    });
+    doc.querySelectorAll('[data-billed-in]').forEach(function (el) { el.textContent = 'Billed in ' + currency; });
+    /* Pricing page: the Family card's size choice. */
+    var fs = familySize();
+    doc.querySelectorAll('[data-family-size]').forEach(function (b) {
+      var on = b.getAttribute('data-family-size') === fs;
+      var off = b.getAttribute('data-family-size') === '5tb' && billing === 'yearly';
+      b.setAttribute('aria-pressed', String(on));
+      b.disabled = off;
+      var note = b.querySelector('[data-size-note]');
+      if (note) note.textContent = off ? 'Monthly only' : note.getAttribute('data-size-note');
+    });
+    doc.querySelectorAll('[data-family-card]').forEach(function (card) {
+      card.querySelectorAll('[data-storage]').forEach(function (el) { el.textContent = fs === '5tb' ? '5TB' : '1TB'; });
+      card.querySelectorAll('[data-bar]').forEach(function (el) { el.style.width = fs === '5tb' ? '100%' : '20%'; });
+      card.querySelectorAll('[data-5tb-only]').forEach(function (el) { el.hidden = fs !== '5tb'; });
     });
     doc.querySelectorAll('[data-bill-label]').forEach(function (el) {
       el.textContent = billing === 'yearly' ? 'Billed yearly' : 'Billed monthly';
     });
     doc.querySelectorAll('[data-auth="plan"]').forEach(function (a) {
-      a.setAttribute('href', webappUrl({ mode: 'signup', plan: a.getAttribute('data-plan'), billing: billing, trial: a.hasAttribute('data-trial') }));
+      a.setAttribute('href', webappUrl({ mode: 'signup', plan: a.getAttribute('data-plan'), billing: billing, trial: a.hasAttribute('data-trial'), size: sizeFor(a) }));
     });
     doc.querySelectorAll('[data-currency]').forEach(function (sel) { sel.value = currency; });
     /* An open popup keeps its focus; only its prices and links change. */
     if (modal && !modal.hidden && state.plan) {
-      modal.querySelector('[data-auth-plan]').innerHTML = planSummary(state.plan, state.trial);
+      modal.querySelector('[data-auth-plan]').innerHTML = planSummary(state.plan, state.trial, state.size);
       modal.querySelectorAll('[data-provider]').forEach(function (a) {
-        a.setAttribute('href', webappUrl({ mode: state.mode, provider: a.getAttribute('data-provider'), plan: state.plan, billing: billing, trial: state.trial }));
+        a.setAttribute('href', webappUrl({ mode: state.mode, provider: a.getAttribute('data-provider'), plan: state.plan, billing: billing, trial: state.trial, size: state.size }));
       });
     }
     if (offer && !offer.hidden) {
@@ -176,7 +203,7 @@
   var names = null;
   try { names = new Intl.DisplayNames(['en'], { type: 'currency' }); } catch (e) {}
   doc.querySelectorAll('[data-currency-pick]').forEach(function (box) {
-    box.innerHTML = '<label for="cur-pick">Currency</label><select id="cur-pick" data-currency>' +
+    box.innerHTML = '<label for="cur-pick">Pay in</label><select id="cur-pick" data-currency>' +
       CURRENCIES.map(function (c) {
         var n = names ? names.of(c) : '';
         return '<option value="' + c + '">' + c + (n && n !== c ? ' · ' + n : '') + '</option>';
@@ -187,6 +214,15 @@
       try { localStorage.setItem('cg-currency', manual); } catch (err) {}
       setCurrency(manual);
       track('select_currency', { currency: manual });
+    });
+  });
+
+  doc.querySelectorAll('[data-family-size]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      if (b.disabled) return;
+      familyPick = b.getAttribute('data-family-size');
+      renderPrices();
+      track('select_plan_size', { plan: 'family', size: familyPick });
     });
   });
 
@@ -223,6 +259,7 @@
     if (o.provider) q.set('provider', o.provider);
     if (o.email) q.set('email', o.email);
     if (o.plan) { q.set('plan', o.plan); q.set('billing', o.billing || billing); q.set('currency', currency); }
+    if (o.plan === 'family' && o.size === '5tb') q.set('size', '5tb');
     if (o.plan && o.trial && PLANS[o.plan] && PLANS[o.plan].trial) q.set('trial', String(TRIAL_DAYS));
     q.set('source', 'website');
     return WEBAPP + '?' + q.toString();
@@ -269,10 +306,10 @@
       var p = e.target.closest('[data-provider]');
       if (p) {
         track(state.mode === 'login' ? 'login_continue' : 'sign_up_continue', { method: p.getAttribute('data-provider'), plan: state.plan || 'free' });
-        if (state.plan) track(state.trial ? 'begin_trial' : 'begin_checkout', { plan: state.plan, billing: billing, currency: currency, value: value(state.plan, billing) });
+        if (state.plan) track(state.trial ? 'begin_trial' : 'begin_checkout', { plan: state.plan, size: state.size, billing: billing, currency: currency, value: value(state.plan, billing, state.size) });
       }
       var sw = e.target.closest('[data-auth-mode]');
-      if (sw) { e.preventDefault(); open({ mode: sw.getAttribute('data-auth-mode'), plan: state.plan, trial: state.trial }, true); }
+      if (sw) { e.preventDefault(); open({ mode: sw.getAttribute('data-auth-mode'), plan: state.plan, trial: state.trial, size: state.size }, true); }
     });
 
     modal.querySelector('.auth-form').addEventListener('submit', function (e) {
@@ -286,8 +323,8 @@
       }
       input.removeAttribute('aria-invalid');
       track(state.mode === 'login' ? 'login_continue' : 'sign_up_continue', { method: 'email', plan: state.plan || 'free' });
-      if (state.plan) track(state.trial ? 'begin_trial' : 'begin_checkout', { plan: state.plan, billing: billing, currency: currency, value: value(state.plan, billing) });
-      window.location.href = webappUrl({ mode: state.mode, provider: 'email', email: email, plan: state.plan, billing: billing, trial: state.trial });
+      if (state.plan) track(state.trial ? 'begin_trial' : 'begin_checkout', { plan: state.plan, size: state.size, billing: billing, currency: currency, value: value(state.plan, billing, state.size) });
+      window.location.href = webappUrl({ mode: state.mode, provider: 'email', email: email, plan: state.plan, billing: billing, trial: state.trial, size: state.size });
     });
 
     doc.addEventListener('keydown', function (e) {
@@ -303,9 +340,9 @@
 
   /* The plan, what is due today and later, and the terms: trial length
      and end date, price and how often, auto-renewal, how to avoid a charge. */
-  function planSummary(plan, withTrial) {
+  function planSummary(plan, withTrial, size) {
     var P = PLANS[plan];
-    var price = priceText(plan, billing);
+    var price = priceText(plan, billing, size);
     var priceHtml = price ? price : '<span class="price-tbd">' + currency + ' –</span>';
     var per = perText(billing);
     var end = trialEnd();
@@ -318,7 +355,7 @@
       ? 'Free for ' + TRIAL_DAYS + ' days, then billed ' + cycleWord(billing) + '. Payment details are needed to start. ' +
         'Renews automatically until you cancel. Cancel before ' + end + ' and you won’t be charged.'
       : 'Billed ' + cycleWord(billing) + ' from today. Renews automatically until you cancel.';
-    return '<div class="auth-plan-head"><span>CloudGate ' + P.name + ' · ' + P.storage + '</span>' +
+    return '<div class="auth-plan-head"><span>CloudGate ' + P.name + ' · ' + storageOf(plan, size) + '</span>' +
            '<span>Billed ' + cycleWord(billing) + '</span></div>' +
            '<dl>' + rows + '</dl><p>' + tail + '</p>';
   }
@@ -326,14 +363,16 @@
   function open(o, keepFocus) {
     if (!modal) build();
     state = { mode: o.mode === 'login' ? 'login' : 'signup', plan: PLANS[o.plan] ? o.plan : null, trial: !!o.trial && !!(PLANS[o.plan] && PLANS[o.plan].trial) };
+    state.size = state.plan === 'family' && o.size === '5tb' ? '5tb' : '1tb';
     var title = modal.querySelector('#auth-title');
     var sub = modal.querySelector('#auth-sub');
     var box = modal.querySelector('[data-auth-plan]');
     if (state.plan) {
       var P = PLANS[state.plan];
-      title.textContent = state.trial ? 'Try ' + P.name + ' free for ' + TRIAL_DAYS + ' days' : 'Get CloudGate ' + P.name;
+      var nm = P.name + (state.plan === 'family' && state.size === '5tb' ? ' 5TB' : '');
+      title.textContent = state.trial ? 'Try ' + nm + ' free for ' + TRIAL_DAYS + ' days' : 'Get CloudGate ' + nm;
       sub.textContent = state.trial ? 'Log in or sign up to start.' : 'Log in or sign up, then pay.';
-      box.innerHTML = planSummary(state.plan, state.trial);
+      box.innerHTML = planSummary(state.plan, state.trial, state.size);
       box.hidden = false;
     } else {
       title.textContent = state.mode === 'login' ? 'Log in to CloudGate' : 'Get CloudGate';
@@ -342,7 +381,7 @@
     }
     modal.classList.toggle('auth-modal--plan', !!state.plan);
     modal.querySelectorAll('[data-provider]').forEach(function (a) {
-      a.setAttribute('href', webappUrl({ mode: state.mode, provider: a.getAttribute('data-provider'), plan: state.plan, billing: billing, trial: state.trial }));
+      a.setAttribute('href', webappUrl({ mode: state.mode, provider: a.getAttribute('data-provider'), plan: state.plan, billing: billing, trial: state.trial, size: state.size }));
     });
     modal.querySelector('[data-auth-switch]').innerHTML = state.mode === 'login'
       ? 'New to CloudGate? <button type="button" data-auth-mode="signup">Sign up</button>'
@@ -369,11 +408,12 @@
     var kind = a.getAttribute('data-auth');
     var plan = a.getAttribute('data-plan');
     var trial = a.hasAttribute('data-trial');
-    if (kind === 'plan') track('select_plan', { plan: plan, billing: billing, trial: trial, currency: currency, value: value(plan, billing) });
+    var size = plan === 'family' ? sizeFor(a) : undefined;
+    if (kind === 'plan') track('select_plan', { plan: plan, size: size, billing: billing, trial: trial, currency: currency, value: value(plan, billing, size) });
     else track(kind === 'login' ? 'login_start' : 'sign_up_start', {});
     var menu = doc.querySelector('.menu-toggle[aria-expanded="true"]');
     if (menu) menu.click();
-    open({ mode: kind === 'login' ? 'login' : 'signup', plan: plan, trial: trial });
+    open({ mode: kind === 'login' ? 'login' : 'signup', plan: plan, trial: trial, size: size });
   });
 
   /* ---------- Special offer: Pro free for 3 days ----------

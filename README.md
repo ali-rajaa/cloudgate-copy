@@ -29,6 +29,11 @@ edited and previewed.
 - **Sign-in popup:** every Log in, Get started and plan button opens
   Continue with Google / Apple / email, then hands over to the web app with
   the chosen plan.
+- **Pricing page layout:** the owner's Premium design (13 Nov 2026): title
+  with a Monthly / Yearly and "Pay in" currency panel, storage-first cards,
+  Family as the featured dark card with a 1TB / 5TB choice (5TB monthly
+  only), "Billed in" the visitor's currency, and the web app's feature
+  list.
 - **Prices and currency:** the web app's Stripe prices, shown in each
   visitor's own currency by the web app's own rule (country → currency,
   US dollars otherwise), with a currency picker on the pricing page. Set

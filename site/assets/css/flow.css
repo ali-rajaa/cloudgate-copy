@@ -244,3 +244,89 @@ body.auth-open{overflow:hidden;}
 }
 .offer-no:hover{background:var(--fill-hover);color:var(--text);}
 .offer-modal .auth-logo{margin-top:4px;}
+
+/* ---------- Pricing page: the Premium layout (owner's design, 13 Nov 2026) ----------
+   Title on the left and a controls panel (billing, currency) on the
+   right; three cards with storage first; Family as the featured dark
+   card with a 1TB / 5TB choice. */
+.prem{padding-top:var(--hero-top);padding-bottom:var(--s-8);background:var(--hero-bg);}
+.prem-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:var(--s-6) var(--s-7);}
+.prem-intro{flex:1 1 22rem;max-width:38rem;}
+.prem-intro h1{font-size:var(--fs-4xl);letter-spacing:var(--tr-display);line-height:var(--lh-tight);}
+.prem-intro .lead{margin-top:var(--s-4);color:var(--text-2);font-size:var(--fs-md);line-height:var(--lh-lead);}
+.prem-controls{
+  flex:0 1 21rem;min-width:min(17.5rem,100%);display:grid;gap:14px;padding:20px;
+  border-radius:20px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--sh-1);
+}
+.prem-controls .bill-switch{display:flex;}
+.prem-controls .bill-switch label{flex:1;}
+.prem-controls .bill-switch span{justify-content:center;width:100%;}
+.prem-controls .cur-pick{display:flex;justify-content:space-between;align-items:center;gap:12px;}
+.prem-controls .cur-pick[hidden]{display:none;}
+.prem-controls .cur-pick label{position:static;width:auto;height:auto;overflow:visible;clip:auto;font-size:var(--fs-sm);font-weight:600;color:var(--text-2);}
+.prem-controls .cur-pick select{min-height:44px;width:11rem;max-width:60%;border-radius:12px;background-color:var(--surface);border-color:var(--line-strong);}
+
+.prem-grid{margin-top:var(--s-7);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.3fr);gap:var(--s-5);align-items:stretch;}
+@media (max-width:1023.98px){ .prem-grid{grid-template-columns:minmax(0,1fr);max-width:32rem;margin-inline:auto;} }
+
+.pcard{
+  display:flex;flex-direction:column;gap:22px;padding:var(--s-6);border-radius:var(--r-xl);
+  background:var(--surface);color:var(--text);border:1px solid var(--line);box-shadow:var(--sh-1);
+}
+.pcard--best{border:2px solid var(--blue);padding:calc(var(--s-6) - 1px);box-shadow:var(--sh-2);}
+/* The featured card: deep navy in both themes, with its own text and line
+   colours, so everything inside it (terms, list, links) reads on it. */
+.pcard--family{
+  --text:#FFFFFF;--text-2:#C5C8F5;--text-3:#B4B9F0;--line:rgba(255,255,255,.2);--line-strong:rgba(255,255,255,.35);
+  --blue-text:#C9CFFB;--green-text:#9BE8BF;--fill-hover:rgba(255,255,255,.08);
+  background:#1D1F4A;border-color:#1D1F4A;box-shadow:0 24px 48px -20px rgba(29,31,74,.55);
+}
+.pcard-top{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:28px;}
+.pcard-name{font-size:var(--fs-xl);letter-spacing:var(--tr-title);}
+.pcard-pill{padding:5px 12px;border-radius:var(--r-pill);background:var(--blue-pale);color:var(--blue-text);font-size:var(--fs-xs);font-weight:700;white-space:nowrap;}
+.pcard--family .pcard-pill{background:#C9CFFB;color:#1D1F4A;}
+.pcard-store{display:grid;gap:12px;}
+.pcard-size{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 10px;}
+.pcard-gb{font-family:var(--font-num);font-size:clamp(2.75rem,2.2rem + 1.6vw,3.75rem);font-weight:700;line-height:1;letter-spacing:-.03em;}
+.pcard-muted{font-size:var(--fs-sm);color:var(--text-2);}
+.pcard-bar{height:8px;border-radius:var(--r-pill);overflow:hidden;background:var(--bg-tint);box-shadow:inset 0 0 0 1px var(--line);}
+.pcard-bar i{display:block;height:100%;min-width:8px;border-radius:inherit;background:var(--blue);transition:width var(--dur-spring) var(--spring);}
+.pcard--family .pcard-bar{background:rgba(255,255,255,.18);box-shadow:none;}
+.pcard--family .pcard-bar i{background:#AAB3FA;}
+
+.pcard-sizes{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.pcard-sizes button{
+  min-height:64px;padding:12px 14px;border-radius:14px;text-align:left;cursor:pointer;font:inherit;
+  border:2px solid rgba(255,255,255,.25);background:transparent;color:#FFFFFF;
+  transition:background-color var(--dur-2) var(--ease-out),border-color var(--dur-2) var(--ease-out),color var(--dur-2) var(--ease-out),transform 100ms ease-out;
+}
+.pcard-sizes button:hover{border-color:rgba(255,255,255,.5);}
+.pcard-sizes button:active{transform:scale(.98);}
+.pcard-sizes button[aria-pressed="true"]{background:#FFFFFF;border-color:#FFFFFF;color:#1D1F4A;}
+.pcard-sizes button:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.pcard-sizes button:focus-visible{outline:3px solid #AAB3FA;outline-offset:2px;}
+.pcard-sizes b{display:block;font-size:var(--fs-lg);font-weight:700;line-height:1.2;}
+.pcard-sizes span{display:block;margin-top:4px;font-size:var(--fs-xs);font-weight:500;opacity:.85;}
+
+.pcard-price{display:grid;gap:4px;padding-top:20px;border-top:1px solid var(--line);}
+.pcard .price-amt{margin-top:0;}
+.pcard-billed{font-size:var(--fs-xs);color:var(--text-2);}
+.pcard .price-trial{margin-top:2px;}
+.pcard .price-actions{margin-top:0;}
+.pcard .price-terms{margin-top:-10px;}
+.pcard .price-feats{margin-top:0;padding-top:0;border-top:0;gap:14px;}
+.pcard .price-feats li{font-size:var(--fs-sm);}
+.pcard-cta-light{background:#FFFFFF;color:#1D1F4A;box-shadow:none;}
+.pcard-cta-light:hover{background:#EEF0FF;color:#1D1F4A;}
+
+.prem-foot{
+  margin-top:var(--s-7);padding-top:28px;border-top:1px solid var(--line);
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s-4);
+}
+.prem-foot p{max-width:44rem;color:var(--text-2);font-size:var(--fs-sm);line-height:var(--lh-body);}
+.prem-foot strong{color:var(--text);}
+@media (max-width:520px){
+  .pcard{padding:var(--s-5);}
+  .pcard--best{padding:calc(var(--s-5) - 1px);}
+  .prem-foot .btn{width:100%;}
+}

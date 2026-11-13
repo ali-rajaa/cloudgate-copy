@@ -21,7 +21,7 @@
   });
 </script>
 <title>CloudGate Pricing: Plus, Pro and Family Plans</title>
-<meta name="description" content="Compare CloudGate Plus (250GB), Pro (500GB) and Family (1TB), billed monthly or yearly. 100GB free on every account, and a 3-day free trial on Pro and Family.">
+<meta name="description" content="Compare CloudGate Plus (250GB), Pro (500GB) and Family (1TB or 5TB), billed monthly or yearly. 100GB free on every account, and a 3-day free trial on Pro and Family.">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <link rel="canonical" href="https://www.cloudgate-app.com/pricing">
 <meta name="color-scheme" content="light dark">
@@ -30,9 +30,9 @@
 <script>(function(d){d.classList.add('js');try{var t=localStorage.getItem('cg-theme');if(t==='light'||t==='dark'){d.setAttribute('data-theme',t);document.querySelectorAll('meta[name="theme-color"]').forEach(function(m){m.content=t==='dark'?'#0B0D14':'#F5F7FE'})}}catch(e){}})(document.documentElement)</script>
 <link rel="preload" href="/assets/fonts/inter-var-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/css/site.css?v=1793102531">
-<link rel="stylesheet" href="/assets/css/flow.css?v=1794319047">
+<link rel="stylesheet" href="/assets/css/flow.css?v=1794319048">
 <script src="/assets/js/site.js?v=1793102531" defer></script>
-<script src="/assets/js/auth.js?v=1794319047" defer></script>
+<script src="/assets/js/auth.js?v=1794319048" defer></script>
 
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -41,7 +41,7 @@
 <meta property="og:site_name" content="CloudGate Storage">
 <meta property="og:locale" content="en_AU">
 <meta property="og:title" content="CloudGate Pricing: Plus, Pro and Family Plans">
-<meta property="og:description" content="Compare CloudGate Plus (250GB), Pro (500GB) and Family (1TB), billed monthly or yearly. 100GB free on every account, and a 3-day free trial on Pro and Family.">
+<meta property="og:description" content="Compare CloudGate Plus (250GB), Pro (500GB) and Family (1TB or 5TB), billed monthly or yearly. 100GB free on every account, and a 3-day free trial on Pro and Family.">
 <meta property="og:url" content="https://www.cloudgate-app.com/pricing">
 <meta property="og:image" content="https://www.cloudgate-app.com/og-image.png">
 <meta property="og:image:width" content="1200">
@@ -49,7 +49,7 @@
 <meta property="og:image:alt" content="CloudGate Storage: 100GB free cloud storage for Android, iPhone and the web">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="CloudGate Pricing: Plus, Pro and Family Plans">
-<meta name="twitter:description" content="Compare CloudGate Plus (250GB), Pro (500GB) and Family (1TB), billed monthly or yearly. 100GB free on every account, and a 3-day free trial on Pro and Family.">
+<meta name="twitter:description" content="Compare CloudGate Plus (250GB), Pro (500GB) and Family (1TB or 5TB), billed monthly or yearly. 100GB free on every account, and a 3-day free trial on Pro and Family.">
 <meta name="twitter:image" content="https://www.cloudgate-app.com/og-image.png">
 
 
@@ -105,58 +105,78 @@
 <div class="nav-backdrop" id="nav-backdrop" hidden></div>
 
 <main id="main">
-  <section class="pricing-hero">
+  <section class="prem">
     <div class="container">
-      <h1 class="rise r1">Choose your CloudGate plan</h1>
-      <p class="lead rise r2">Every account starts with 100GB free. When you need more room, pick a plan, billed monthly or yearly.</p>
-    </div>
-  </section>
-  <section class="pricing-plans" style="padding-top:var(--s-6)">
-    <div class="container">
-      <div class="bill-switch-wrap"><div class="bill-switch" role="radiogroup" aria-label="Billing"><label><input type="radio" name="billing" value="monthly" data-billing checked><span>Billed monthly</span></label><label><input type="radio" name="billing" value="yearly" data-billing><span>Billed yearly</span></label></div><div class="cur-pick" data-currency-pick hidden></div></div>
-      <div class="price-grid price-grid--flagged">
-        <div class="price-card reveal">
-          <p class="price-for">For personal use</p>
-          <h3 class="price-name">Plus</h3>
-          <p class="price-storage">250GB of storage</p>
-          <p class="price-amt"><span class="price-num" data-price="plus">A$6.96</span><span class="price-per" data-per>/month</span></p>
+      <div class="prem-head">
+        <div class="prem-intro">
+          <h1 class="rise r1">Storage that grows with you.</h1>
+          <p class="lead rise r2">Pick the plan that fits how much you store. Every account starts with 100GB free, and you can switch or cancel at any time.</p>
+        </div>
+        <div class="prem-controls rise r2">
+          <div class="bill-switch" role="radiogroup" aria-label="Billing"><label><input type="radio" name="billing" value="monthly" data-billing checked><span>Monthly</span></label><label><input type="radio" name="billing" value="yearly" data-billing><span>Yearly</span></label></div>
+          <div class="cur-pick" data-currency-pick hidden></div>
+        </div>
+      </div>
+      <div class="prem-grid">
+        <section class="pcard reveal" aria-labelledby="plan-plus">
+          <div class="pcard-top"><h2 class="pcard-name" id="plan-plus">Plus</h2></div>
+          <div class="pcard-store">
+            <p class="pcard-size"><span class="pcard-gb">250GB</span> <span class="pcard-muted">of storage</span></p>
+            <div class="pcard-bar" aria-hidden="true"><i style="width:5%"></i></div>
+          </div>
+          <div class="pcard-price">
+            <p class="price-amt"><span class="price-num" data-price="plus">A$6.96</span><span class="price-per" data-per>/month</span></p>
+            <p class="pcard-billed" data-billed-in>Billed in AUD</p>
+          </div>
           <div class="price-actions">
-            <a href="https://my.cloudgate-app.com/?mode=signup&amp;plan=plus&amp;billing=monthly&amp;source=website" class="btn btn-primary btn-lg" data-auth="plan" data-plan="plus">Continue<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+            <a href="https://my.cloudgate-app.com/?mode=signup&amp;plan=plus&amp;billing=monthly&amp;source=website" class="btn btn-primary btn-lg" data-auth="plan" data-plan="plus">Choose Plus<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
           </div>
           <p class="price-terms" data-terms="plus">A$6.96 per month, billed monthly from today. Renews automatically until you cancel.</p>
-          <ul class="price-feats" role="list"><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span><strong>250GB</strong> of cloud storage</span></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span>Automatic photo and video backup</span></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span>Android, iPhone and the web</span></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span>Vault with passcode lock</span></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span>One-tap restore</span></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span>Document scanning</span></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span>File sharing</span></li></ul>
-        </div>
-        <div class="price-card price-card--best reveal">
-          <span class="price-flag">Best value</span>
-          <p class="price-for">For heavy photo and 4K video</p>
-          <h3 class="price-name">Pro</h3>
-          <p class="price-storage">500GB of storage</p>
-          <p class="price-amt"><span class="price-num" data-price="pro">A$9.75</span><span class="price-per" data-per>/month</span></p>
-          <p class="price-trial">3-day free trial</p>
+          <ul class="price-feats" role="list"><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span>High speed cloud storage</span></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span>End to end encryption support</span></li></ul>
+        </section>
+        <section class="pcard pcard--best reveal" aria-labelledby="plan-pro">
+          <div class="pcard-top"><h2 class="pcard-name" id="plan-pro">Pro</h2><span class="pcard-pill">Best value</span></div>
+          <div class="pcard-store">
+            <p class="pcard-size"><span class="pcard-gb">500GB</span> <span class="pcard-muted">of storage</span></p>
+            <div class="pcard-bar" aria-hidden="true"><i style="width:10%"></i></div>
+          </div>
+          <div class="pcard-price">
+            <p class="price-amt"><span class="price-num" data-price="pro">A$9.75</span><span class="price-per" data-per>/month</span></p>
+            <p class="pcard-billed" data-billed-in>Billed in AUD</p>
+            <p class="price-trial">3-day free trial</p>
+          </div>
           <div class="price-actions">
-            <a href="https://my.cloudgate-app.com/?mode=signup&amp;plan=pro&amp;billing=monthly&amp;trial=3&amp;source=website" class="btn btn-primary btn-lg" data-auth="plan" data-plan="pro" data-trial>Try free for 3 days<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+            <a href="https://my.cloudgate-app.com/?mode=signup&amp;plan=pro&amp;billing=monthly&amp;trial=3&amp;source=website" class="btn btn-primary btn-lg" data-auth="plan" data-plan="pro" data-trial>Try Pro free for 3 days<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
             <a href="https://my.cloudgate-app.com/?mode=signup&amp;plan=pro&amp;billing=monthly&amp;source=website" class="price-buy" data-auth="plan" data-plan="pro">or buy now<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
           </div>
           <p class="price-terms" data-terms="pro">Free for 3 days, then A$9.75 per month, billed monthly. Your payment details are needed to start the trial. Renews automatically until you cancel; cancel before the trial ends and you won’t be charged.</p>
-          <ul class="price-feats" role="list"><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span><strong>500GB</strong> of cloud storage</span></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span>Automatic photo and video backup</span></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span>Android, iPhone and the web</span></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span>Vault with passcode lock</span></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span>One-tap restore</span></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span>Document scanning</span></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span>File sharing</span></li></ul>
-        </div>
-        <div class="price-card reveal">
-          <p class="price-for">For a household</p>
-          <h3 class="price-name">Family</h3>
-          <p class="price-storage">1TB of storage</p>
-          <p class="price-amt"><span class="price-num" data-price="family">A$13.94</span><span class="price-per" data-per>/month</span></p>
-          <p class="price-trial">3-day free trial</p>
-          <div class="price-actions">
-            <a href="https://my.cloudgate-app.com/?mode=signup&amp;plan=family&amp;billing=monthly&amp;trial=3&amp;source=website" class="btn btn-primary btn-lg" data-auth="plan" data-plan="family" data-trial>Try free for 3 days<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-            <a href="https://my.cloudgate-app.com/?mode=signup&amp;plan=family&amp;billing=monthly&amp;source=website" class="price-buy" data-auth="plan" data-plan="family">or buy now<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <ul class="price-feats" role="list"><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span>High speed cloud storage</span></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span>End to end encryption support</span></li></ul>
+        </section>
+        <section class="pcard pcard--family reveal" aria-labelledby="plan-family" data-family-card>
+          <div class="pcard-top"><h2 class="pcard-name" id="plan-family">Family</h2><span class="pcard-pill">Share with up to 5</span></div>
+          <div class="pcard-store">
+            <p class="pcard-size"><span class="pcard-gb" data-storage>5TB</span> <span class="pcard-muted">of storage</span></p>
+            <div class="pcard-bar" aria-hidden="true"><i data-bar style="width:100%"></i></div>
           </div>
-          <p class="price-terms" data-terms="family">Free for 3 days, then A$13.94 per month, billed monthly. Your payment details are needed to start the trial. Renews automatically until you cancel; cancel before the trial ends and you won’t be charged.</p>
-          <ul class="price-feats" role="list"><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span><strong>1TB</strong> of cloud storage</span></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span>Automatic photo and video backup</span></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span>Android, iPhone and the web</span></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span>Vault with passcode lock</span></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span>One-tap restore</span></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span>Document scanning</span></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span>File sharing</span></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span>One plan for the household’s phones</span></li></ul>
-        </div>
+          <div class="pcard-sizes" role="group" aria-label="Family plan size">
+            <button type="button" data-family-size="1tb" aria-pressed="false"><b>1TB</b><span data-size-note="Photos and documents">Photos and documents</span></button>
+            <button type="button" data-family-size="5tb" aria-pressed="true"><b>5TB</b><span data-size-note="Video and full archives">Video and full archives</span></button>
+          </div>
+          <div class="pcard-price">
+            <p class="price-amt"><span class="price-num" data-price="family">A$20.92</span><span class="price-per" data-per>/month</span></p>
+            <p class="pcard-billed" data-billed-in>Billed in AUD</p>
+            <p class="price-trial">3-day free trial</p>
+          </div>
+          <div class="price-actions">
+            <a href="https://my.cloudgate-app.com/?mode=signup&amp;plan=family&amp;billing=monthly&amp;size=5tb&amp;trial=3&amp;source=website" class="btn btn-lg pcard-cta-light" data-auth="plan" data-plan="family" data-trial>Try Family free for 3 days<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+            <a href="https://my.cloudgate-app.com/?mode=signup&amp;plan=family&amp;billing=monthly&amp;size=5tb&amp;source=website" class="price-buy" data-auth="plan" data-plan="family">or buy now<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          </div>
+          <p class="price-terms" data-terms="family">Free for 3 days, then A$20.92 per month, billed monthly. Your payment details are needed to start the trial. Renews automatically until you cancel; cancel before the trial ends and you won’t be charged.</p>
+          <ul class="price-feats" role="list"><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span>High speed cloud storage</span></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span>End to end encryption support</span></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span>Share with up to 5 family members</span></li><li data-5tb-only><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span>Room for large video libraries, full-resolution archives and backups for the whole family</span></li></ul>
+        </section>
       </div>
-      <p class="price-foot">Every plan includes the same features. The only difference is how much room you get.</p>
-      <div class="pricing-free reveal">
-        <p><strong>Just need the basics?</strong> Every account includes 100GB of free storage, with no card needed.</p>
+      <div class="prem-foot reveal">
+        <p>Cancel anytime, and your storage returns to the free 100GB. <strong>Just need the basics?</strong> Every account includes 100GB free, with no card needed.</p>
         <a href="https://my.cloudgate-app.com/?mode=signup&amp;source=website" class="btn btn-ghost" data-auth="signup">Get started free<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       </div>
     </div>
