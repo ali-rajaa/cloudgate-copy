@@ -25,9 +25,6 @@
 .hero-offer strong{display:inline-flex;align-items:center;padding:4px 10px;border-radius:var(--r-pill);background:var(--blue);color:var(--on-blue);font-weight:700;white-space:nowrap;flex-shrink:0;}
 @media (max-width:420px){ .hero-offer{font-size:var(--fs-xs);padding-right:12px;} }
 .hero-actions{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s-3);margin-top:var(--s-6);}
-.hero-apps{margin-top:var(--s-5);}
-.hero-apps-label{font-size:var(--fs-xs);font-weight:600;color:var(--text-3);margin-bottom:var(--s-2);}
-.hero-apps .badges{gap:var(--s-2);}
 @media (max-width:520px){ .hero-actions .btn{width:100%;} }
 
 /* ---------- 100GB free band ---------- */
@@ -362,3 +359,24 @@ body.auth-open{overflow:hidden;}
 
 /* Get started on the pricing page scrolls here, clear of the floating header. */
 #plans{scroll-margin-top:calc(var(--header-h) + var(--header-top) + var(--s-5));}
+
+/* ---------- Main calls to action: bigger and clearer ---------- */
+.btn-xl{--btn-h:58px;padding:0 30px;font-size:1.125rem;font-weight:700;border-radius:14px;}
+.btn-xl svg{width:18px;height:18px;}
+.btn-primary.btn-xl{box-shadow:0 14px 30px -10px rgba(59,99,245,.6);}
+.btn-primary.btn-xl:hover{transform:translateY(-1px);box-shadow:0 18px 36px -12px rgba(59,99,245,.7);}
+.btn-secondary.btn-xl{border-width:2px;border-color:var(--line-strong);background:var(--surface);box-shadow:var(--sh-1);}
+.btn-secondary.btn-xl:hover{transform:translateY(-1px);}
+.hero-actions{gap:var(--s-3) var(--s-4);margin-top:var(--s-6);}
+.hero-actions + .hero-trust{margin-top:var(--s-6);}
+/* On the blue band: a white primary and an outlined secondary. */
+.cta-actions{display:flex;flex-wrap:wrap;gap:var(--s-3);flex-shrink:0;}
+.btn-on-blue{background:#FFFFFF;color:#1F3FD1;box-shadow:0 14px 30px -12px rgba(10,12,26,.45);}
+.btn-on-blue:hover{background:#EEF2FF;color:#1F3FD1;transform:translateY(-1px);}
+.btn-outline-on-blue{background:transparent;color:#FFFFFF;border:2px solid rgba(255,255,255,.6);}
+.btn-outline-on-blue:hover{background:rgba(255,255,255,.12);border-color:#FFFFFF;color:#FFFFFF;transform:translateY(-1px);}
+@media (max-width:767.98px){ .cta-actions{justify-content:center;} }
+@media (max-width:520px){
+  .hero-actions .btn,.cta-actions,.cta-actions .btn{width:100%;}
+  .btn-xl{--btn-h:54px;font-size:var(--fs-md);}
+}
