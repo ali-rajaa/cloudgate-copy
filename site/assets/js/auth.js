@@ -439,8 +439,15 @@
     if (lastFocus && lastFocus.focus) lastFocus.focus();
   }
 
-  /* Every [data-auth] link opens the popup: Log in, Get started, plan
-     buttons. Without JavaScript they still go straight to the web app. */
+  /* Get started buttons go to the pricing page, where visitors choose a
+     plan (or the free 100GB) before signing up. Counted on the way. */
+  doc.addEventListener('click', function (e) {
+    var g = e.target.closest('[data-get-started]');
+    if (g) track('sign_up_start', { destination: 'pricing', transport_type: 'beacon' });
+  });
+
+  /* Every [data-auth] link opens the popup: Log in, plan buttons and the
+     free sign-up. Without JavaScript they still go straight to the web app. */
   doc.addEventListener('click', function (e) {
     var a = e.target.closest('[data-auth]');
     if (!a || e.metaKey || e.ctrlKey || e.shiftKey || e.button > 0) return;

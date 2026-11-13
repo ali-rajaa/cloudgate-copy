@@ -359,3 +359,6 @@ body.auth-open{overflow:hidden;}
 @media (prefers-reduced-motion:reduce){
   .bill-switch::before,.pcard-bar i{transition:none;}
 }
+
+/* Get started on the pricing page scrolls here, clear of the floating header. */
+#plans{scroll-margin-top:calc(var(--header-h) + var(--header-top) + var(--s-5));}
