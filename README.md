@@ -29,10 +29,11 @@ edited and previewed.
 - **Sign-in popup:** every Log in, Get started and plan button opens
   Continue with Google / Apple / email, then hands over to the web app with
   the chosen plan.
-- **Prices:** the web app's Stripe prices in Australian dollars (Plus
-  A$6.96/month or A$41.84/year, Pro A$9.75 or A$55.80, Family A$13.94 or
-  A$97.66). Set in `site/assets/js/auth.js` (`PLANS`), with the monthly
-  figures repeated in the cards' HTML; see `WEBAPP-HANDOFF.md`, section 7.
+- **Prices and currency:** the web app's Stripe prices, shown in each
+  visitor's own currency by the web app's own rule (country → currency,
+  US dollars otherwise), with a currency picker on the pricing page. Set
+  in `site/assets/js/auth.js` (`PRICES`); see `WEBAPP-HANDOFF.md`,
+  section 7.
 - **Special offer:** pages with plan cards offer "Try Pro free for 3 days"
   once per visitor (after 40 seconds, or when a desktop pointer heads for
   the tabs), with the full trial terms. Add `?offer=show` to a page's

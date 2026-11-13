@@ -28,13 +28,14 @@ choice sends the visitor to the web app's root with these parameters:
 | `plan` | `plus`, `pro`, `family` | The plan chosen on the pricing page (absent = free 100GB) |
 | `billing` | `monthly`, `yearly` | The billing cycle chosen |
 | `trial` | `3` | A 3-day free trial was chosen (only ever with `pro` or `family`) |
+| `currency` | `AUD`, `USD`, `GBP`, … | The currency the website showed the prices in (only with `plan`); open checkout in it |
 | `source` | `website` | Came from the website |
 
 Examples:
 
 ```
-https://my.cloudgate-app.com/?mode=signup&provider=google&plan=pro&billing=yearly&trial=3&source=website
-https://my.cloudgate-app.com/?mode=signup&provider=email&email=name%40example.com&plan=plus&billing=monthly&source=website
+https://my.cloudgate-app.com/?mode=signup&provider=google&plan=pro&billing=yearly&currency=AUD&trial=3&source=website
+https://my.cloudgate-app.com/?mode=signup&provider=email&email=name%40example.com&plan=plus&billing=monthly&currency=GBP&source=website
 https://my.cloudgate-app.com/?mode=login&provider=apple&source=website
 ```
 
@@ -119,36 +120,48 @@ The results must be reported by the web app, after they really happen:
 Send `purchase` from the success page or, better, server-side from the
 Stripe webhook, with the Google Ads conversion labels the owner provides.
 
-## 7. Prices
+## 7. Prices and currency
 
-The website shows the web app's own Stripe prices in Australian dollars,
-read from the web app's plan list (`getdetails`) on 13 Nov 2026 and picked
-the way the web app picks them (the first price above zero in the
-currency). They live in one list in `site/assets/js/auth.js`, `PLANS`.
+The website shows the web app's own Stripe prices (products
+`cg_{plan}_{billing}`, read from its plan list `getdetails` on 13 Nov 2026)
+in all 11 currencies it sells in: AUD, USD, CAD, EUR, GBP, INR, PKR, AED,
+SAR, JPY, CNY. They live in one table in `site/assets/js/auth.js`,
+`PRICES`, in Stripe's minor units, picked the way the web app picks them
+(the first price above zero in the currency).
 
-| Plan | Stripe product | AUD | USD |
-|---|---|---|---|
-| Plus, monthly | `cg_plus_monthly` | A$6.96 | US$4.99 |
-| Plus, yearly | `cg_plus_yearly` | A$41.84 | US$29.99 |
-| Pro, monthly | `cg_pro_monthly` | A$9.75 | US$6.99 |
-| Pro, yearly | `cg_pro_yearly` | A$55.80 | US$39.99 |
-| Family, monthly | `cg_family_monthly` | A$13.94 | US$9.99 |
-| Family, yearly | `cg_family_yearly` | A$97.66 | US$69.99 |
+**Which currency** follows the web app's Premium page exactly, so the
+website and checkout agree:
 
-The product names match the website's link parameters:
-`plan=pro&billing=yearly` → `cg_pro_yearly`, so the web app can open the
-right checkout straight from the link.
+1. a currency the visitor picked on the website's pricing page (kept in
+   their browser);
+2. otherwise their country from `get.geojs.io` (the service the web app
+   uses), mapped with the web app's table (US→USD, GB→GBP, DE/FR/ES/IT/NL/IE
+   →EUR, CA→CAD, AU→AUD, IN→INR, PK→PKR, AE→AED, SA→SAR, JP→JPY, CN→CNY);
+3. otherwise US dollars.
 
-- **If a price changes in Stripe**, change it in `PLANS` too (and the
-  monthly figures in the pricing cards' HTML), or the website and the
-  checkout will disagree.
-- **Currency:** the web app charges each visitor in their local currency
-  (by location, US dollars by default); the website shows Australian
-  dollars. A visitor outside Australia sees A$ on the website and their
-  own currency at checkout, which the checkout page must state clearly.
-- Several products also hold A$0 / US$0 prices; the web app skips them.
-  Make sure the trial checkout uses the paid price with
-  `trial_period_days: 3`, not a $0 price.
+The time zone gives a first guess before the lookup answers. Prices are
+formatted like the web app (`Intl.NumberFormat('en')`, no decimals for
+yen). The chosen currency travels in the link as `currency=`; the web app
+should open checkout in it (its own manual-currency setting does the
+same).
+
+| Plan | Stripe product | AUD | USD | GBP | EUR |
+|---|---|---|---|---|---|
+| Plus, monthly | `cg_plus_monthly` | A$6.96 | $4.99 | £3.69 | €4.31 |
+| Plus, yearly | `cg_plus_yearly` | A$41.84 | $29.99 | £22.15 | €25.88 |
+| Pro, monthly | `cg_pro_monthly` | A$9.75 | $6.99 | £5.16 | €6.03 |
+| Pro, yearly | `cg_pro_yearly` | A$55.80 | $39.99 | £29.54 | €34.52 |
+| Family, monthly | `cg_family_monthly` | A$13.94 | $9.99 | £7.38 | €8.62 |
+| Family, yearly | `cg_family_yearly` | A$97.66 | $69.99 | £51.70 | €60.41 |
+
+(Other currencies: see `PRICES`.)
+
+- **If a price changes in Stripe**, change it in `PRICES` too (and the AUD
+  monthly figures in the cards' HTML), or the website and checkout will
+  disagree.
+- The product names match the link parameters: `plan=pro&billing=yearly`
+  → `cg_pro_yearly`.
+- Several products also hold $0 prices; the web app skips them. The trial
+  checkout must use the paid price with `trial_period_days: 3`.
 - The `to_…` IDs the owner sent on 13 Nov are not price IDs (those start
-  with `price_`); the web app doesn't need them, as it looks prices up by
-  product name.
+  with `price_`); the web app doesn't need them.

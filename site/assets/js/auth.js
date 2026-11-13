@@ -1,28 +1,68 @@
 /* CloudGate: sign-up and pricing flow (owner, 10 Nov 2026).
    Website -> Pricing -> plan -> Log in / Sign up -> payment -> dashboard.
 
-   PRICES: the one place to set them, in Australian dollars. They are the
-   AUD prices of the web app's Stripe products cg_{plan}_{billing} (read
-   from its plan list on 13 Nov 2026), so the website shows what the web
-   app charges. null would show an amber blank instead. The pages' HTML
-   carries the monthly figures too, for the first paint; keep them equal. */
+   Prices: the prices of the web app's Stripe products cg_{plan}_{billing}
+   in every currency it sells in, in Stripe's minor units (cents; yen as
+   is), read from its plan list on 13 Nov 2026 and picked the way the web
+   app picks them. Change them here when they change in Stripe. The pages'
+   HTML carries the AUD monthly figures for the first paint.
+
+   Which currency: each visitor sees the currency the web app will charge
+   them, chosen by the web app's own rule: their country (get.geojs.io, as
+   the web app uses) mapped to a currency, used if CloudGate sells in it,
+   otherwise US dollars. The time zone gives a first guess at once, so
+   prices rarely change after load; a currency picked on the pricing page
+   wins over both. */
 (function () {
   'use strict';
 
-  var CURRENCY = 'A$';
   var TRIAL_DAYS = 3;
   var PLANS = {
-    plus:   { name: 'Plus',   storage: '250GB', trial: false, monthly: '6.96',  yearly: '41.84' },
-    pro:    { name: 'Pro',    storage: '500GB', trial: true,  monthly: '9.75',  yearly: '55.80' },
-    family: { name: 'Family', storage: '1TB',   trial: true,  monthly: '13.94', yearly: '97.66' }
+    plus:   { name: 'Plus',   storage: '250GB', trial: false },
+    pro:    { name: 'Pro',    storage: '500GB', trial: true },
+    family: { name: 'Family', storage: '1TB',   trial: true }
+  };
+  var PRICES = {
+    plus: {
+      monthly: { AUD: 696, USD: 499, CAD: 694, EUR: 431, GBP: 369, INR: 47622, PKR: 138497, AED: 1833, SAR: 1873, JPY: 799, CNY: 3357 },
+      yearly: { AUD: 4184, USD: 2999, CAD: 4172, EUR: 2588, GBP: 2215, INR: 286208, PKR: 832372, AED: 11015, SAR: 11255, JPY: 4801, CNY: 20174 }
+    },
+    pro: {
+      monthly: { AUD: 975, USD: 699, CAD: 973, EUR: 603, GBP: 516, INR: 66709, PKR: 194007, AED: 2567, SAR: 2623, JPY: 1119, CNY: 4702 },
+      yearly: { AUD: 5580, USD: 3999, CAD: 5563, EUR: 3452, GBP: 2954, INR: 381643, PKR: 1109922, AED: 14688, SAR: 15008, JPY: 6401, CNY: 26900 }
+    },
+    family: {
+      monthly: { AUD: 1394, USD: 999, CAD: 1390, EUR: 862, GBP: 738, INR: 95339, PKR: 277272, AED: 3669, SAR: 3749, JPY: 1599, CNY: 6720 },
+      yearly: { AUD: 9766, USD: 6999, CAD: 9736, EUR: 6041, GBP: 5170, INR: 667946, PKR: 1942572, AED: 25707, SAR: 26267, JPY: 11204, CNY: 47081 }
+    }
+  };
+  /* The web app's tables (premium page): country -> currency, and the
+     currencies Stripe counts without cents. */
+  var COUNTRY_CURRENCY = { US: 'USD', GB: 'GBP', DE: 'EUR', FR: 'EUR', ES: 'EUR', IT: 'EUR', NL: 'EUR', IE: 'EUR',
+    CA: 'CAD', AU: 'AUD', IN: 'INR', PK: 'PKR', AE: 'AED', SA: 'SAR', JP: 'JPY', CN: 'CNY' };
+  var ZERO_DECIMAL = ['BIF', 'CLP', 'DJF', 'GNF', 'JPY', 'KMF', 'KRW', 'MGA', 'PYG', 'RWF', 'UGX', 'VND', 'VUV', 'XAF', 'XOF', 'XPF'];
+  var FALLBACK = 'USD';
+  var CURRENCIES = Object.keys(PRICES.pro.monthly).sort();
+  /* Time zone -> country, for the first guess before the lookup answers. */
+  var TZ_COUNTRY = {
+    'Europe/London': 'GB', 'Europe/Belfast': 'GB', 'Europe/Dublin': 'IE', 'Europe/Berlin': 'DE', 'Europe/Busingen': 'DE',
+    'Europe/Paris': 'FR', 'Europe/Madrid': 'ES', 'Africa/Ceuta': 'ES', 'Atlantic/Canary': 'ES', 'Europe/Rome': 'IT',
+    'Europe/Amsterdam': 'NL', 'Asia/Kolkata': 'IN', 'Asia/Calcutta': 'IN', 'Asia/Karachi': 'PK', 'Asia/Dubai': 'AE',
+    'Asia/Riyadh': 'SA', 'Asia/Tokyo': 'JP', 'Asia/Shanghai': 'CN', 'Asia/Urumqi': 'CN', 'Asia/Chongqing': 'CN', 'PRC': 'CN',
+    'America/Toronto': 'CA', 'America/Montreal': 'CA', 'America/Vancouver': 'CA', 'America/Edmonton': 'CA',
+    'America/Winnipeg': 'CA', 'America/Halifax': 'CA', 'America/St_Johns': 'CA', 'America/Regina': 'CA',
+    'America/Moncton': 'CA', 'America/Whitehorse': 'CA', 'America/Yellowknife': 'CA', 'America/Iqaluit': 'CA',
+    'America/Glace_Bay': 'CA', 'America/Goose_Bay': 'CA', 'America/Swift_Current': 'CA', 'America/Dawson_Creek': 'CA',
+    'America/Fort_Nelson': 'CA', 'America/Inuvik': 'CA', 'America/Dawson': 'CA', 'America/Creston': 'CA',
+    'America/Atikokan': 'CA', 'America/Rankin_Inlet': 'CA', 'America/Resolute': 'CA', 'America/Cambridge_Bay': 'CA'
   };
 
   /* The web app (my.cloudgate-app.com) signs people in and takes payment.
      These parameters tell it what the visitor chose (WEBAPP-HANDOFF.md):
      mode (login | signup), provider (google | apple | email), email,
      plan (plus | pro | family), billing (monthly | yearly), trial (3),
-     source=website. Until the web app reads them, it opens its normal
-     sign-in page, so every link still works. */
+     currency (e.g. AUD), source=website. Until the web app reads them, it
+     opens its normal sign-in page, so every link still works. */
   var WEBAPP = 'https://my.cloudgate-app.com/';
 
   var doc = document;
@@ -33,9 +73,46 @@
     if (typeof window.gtag === 'function') window.gtag('event', name, params || {});
   }
 
+  /* ---------- Currency ---------- */
+  function forCountry(cc) {
+    var c = cc && COUNTRY_CURRENCY[String(cc).toUpperCase()];
+    return c && CURRENCIES.indexOf(c) !== -1 ? c : FALLBACK;
+  }
+  function tzCountry() {
+    try {
+      var tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+      if (tz.indexOf('Australia/') === 0) return 'AU';
+      return TZ_COUNTRY[tz] || null;
+    } catch (e) { return null; }
+  }
+  var manual = null, country = null;
+  try {
+    var saved = localStorage.getItem('cg-currency');
+    if (saved && CURRENCIES.indexOf(saved) !== -1) manual = saved;
+    country = sessionStorage.getItem('cg-country');
+  } catch (e) {}
+  var currency = manual || forCountry(country || tzCountry());
+
+  function decimals(cur) { return ZERO_DECIMAL.indexOf(cur) !== -1 ? 0 : 2; }
+  function money(minor, cur) {
+    var d = decimals(cur);
+    var major = minor / Math.pow(10, d);
+    try {
+      return new Intl.NumberFormat('en', { style: 'currency', currency: cur, minimumFractionDigits: d, maximumFractionDigits: d }).format(major);
+    } catch (e) { return cur + ' ' + major.toFixed(d); }
+  }
+  function amount(plan, cycle) {
+    var p = PRICES[plan] && PRICES[plan][cycle];
+    return p && typeof p[currency] === 'number' ? p[currency] : null;
+  }
   function priceText(plan, cycle) {
-    var p = PLANS[plan][cycle];
-    return p == null ? null : CURRENCY + p;
+    var a = amount(plan, cycle);
+    return a == null ? null : money(a, currency);
+  }
+  /* For Google tag events: the price in whole units. */
+  function value(plan, cycle) {
+    var a = amount(plan, cycle);
+    return a == null ? undefined : a / Math.pow(10, decimals(currency));
   }
   function perText(cycle) { return cycle === 'yearly' ? '/year' : '/month'; }
   function cycleWord(cycle) { return cycle === 'yearly' ? 'yearly' : 'monthly'; }
@@ -47,7 +124,7 @@
   /* What the visitor agrees to, in plain words: trial length, price,
      how often, that it renews, and what is charged after the trial. */
   function termsText(plan, cycle, withTrial) {
-    var price = priceText(plan, cycle) || CURRENCY + '[price]';
+    var price = priceText(plan, cycle) || currency + ' [price]';
     var every = cycle === 'yearly' ? 'year' : 'month';
     if (withTrial) {
       return 'Free for ' + TRIAL_DAYS + ' days, then ' + price + ' per ' + every + ', billed ' + cycleWord(cycle) +
@@ -60,7 +137,7 @@
   function renderPrices() {
     doc.querySelectorAll('[data-price]').forEach(function (el) {
       var t = priceText(el.getAttribute('data-price'), billing);
-      el.textContent = t || CURRENCY + ' –';
+      el.textContent = t || currency + ' –';
       el.classList.toggle('price-tbd', !t);
       if (!t) el.setAttribute('title', 'Price to come'); else el.removeAttribute('title');
     });
@@ -75,7 +152,43 @@
     doc.querySelectorAll('[data-auth="plan"]').forEach(function (a) {
       a.setAttribute('href', webappUrl({ mode: 'signup', plan: a.getAttribute('data-plan'), billing: billing, trial: a.hasAttribute('data-trial') }));
     });
+    doc.querySelectorAll('[data-currency]').forEach(function (sel) { sel.value = currency; });
+    /* An open popup keeps its focus; only its prices and links change. */
+    if (modal && !modal.hidden && state.plan) {
+      modal.querySelector('[data-auth-plan]').innerHTML = planSummary(state.plan, state.trial);
+      modal.querySelectorAll('[data-provider]').forEach(function (a) {
+        a.setAttribute('href', webappUrl({ mode: state.mode, provider: a.getAttribute('data-provider'), plan: state.plan, billing: billing, trial: state.trial }));
+      });
+    }
+    if (offer && !offer.hidden) {
+      offer.querySelector('[data-offer-plan]').innerHTML = planSummary('pro', true);
+      offer.querySelector('[data-offer-go]').setAttribute('href', webappUrl({ mode: 'signup', plan: 'pro', billing: billing, trial: true }));
+    }
   }
+
+  function setCurrency(c) {
+    if (CURRENCIES.indexOf(c) === -1 || c === currency) return;
+    currency = c;
+    renderPrices();
+  }
+
+  /* Pricing page: a currency picker, like the web app's. */
+  var names = null;
+  try { names = new Intl.DisplayNames(['en'], { type: 'currency' }); } catch (e) {}
+  doc.querySelectorAll('[data-currency-pick]').forEach(function (box) {
+    box.innerHTML = '<label for="cur-pick">Currency</label><select id="cur-pick" data-currency>' +
+      CURRENCIES.map(function (c) {
+        var n = names ? names.of(c) : '';
+        return '<option value="' + c + '">' + c + (n && n !== c ? ' · ' + n : '') + '</option>';
+      }).join('') + '</select>';
+    box.hidden = false;
+    box.querySelector('select').addEventListener('change', function (e) {
+      manual = e.target.value;
+      try { localStorage.setItem('cg-currency', manual); } catch (err) {}
+      setCurrency(manual);
+      track('select_currency', { currency: manual });
+    });
+  });
 
   doc.querySelectorAll('[data-billing]').forEach(function (input) {
     if (input.value === billing) input.checked = true;
@@ -87,14 +200,29 @@
       track('select_billing', { billing: billing });
     });
   });
+  var modal, offer, state = {};
   renderPrices();
+
+  /* The visitor's country, as the web app finds it. Only on pages that
+     show prices, once per visit, and never over a currency they picked. */
+  if (!manual && !country && doc.querySelector('[data-price]') && window.fetch) {
+    fetch('https://get.geojs.io/v1/ip/country.json', { credentials: 'omit' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) {
+        var cc = d && d.country;
+        if (!cc || !/^[A-Za-z]{2}$/.test(cc)) return;
+        try { sessionStorage.setItem('cg-country', cc.toUpperCase()); } catch (e) {}
+        if (!manual) setCurrency(forCountry(cc));
+      })
+      .catch(function () {});
+  }
 
   function webappUrl(o) {
     var q = new URLSearchParams();
     q.set('mode', o.mode || 'signup');
     if (o.provider) q.set('provider', o.provider);
     if (o.email) q.set('email', o.email);
-    if (o.plan) { q.set('plan', o.plan); q.set('billing', o.billing || billing); }
+    if (o.plan) { q.set('plan', o.plan); q.set('billing', o.billing || billing); q.set('currency', currency); }
     if (o.plan && o.trial && PLANS[o.plan] && PLANS[o.plan].trial) q.set('trial', String(TRIAL_DAYS));
     q.set('source', 'website');
     return WEBAPP + '?' + q.toString();
@@ -105,7 +233,7 @@
   var ICON_G = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M22.5 12.25c0-.8-.07-1.56-.2-2.3H12v4.35h5.9a5.05 5.05 0 0 1-2.2 3.3v2.75h3.55c2.08-1.92 3.25-4.74 3.25-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.55-2.75c-.98.66-2.24 1.05-3.73 1.05-2.87 0-5.3-1.94-6.17-4.55H2.17v2.84A11 11 0 0 0 12 23z"/><path fill="#FBBC05" d="M5.83 14.09a6.6 6.6 0 0 1 0-4.18V7.07H2.17a11 11 0 0 0 0 9.86l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.2 1.64l3.15-3.15A10.97 10.97 0 0 0 12 1 11 11 0 0 0 2.17 7.07l3.66 2.84C6.7 7.32 9.13 5.38 12 5.38z"/></svg>';
   var ICON_A = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.05 12.34c-.03-2.5 2.04-3.7 2.13-3.76-1.17-1.71-2.98-1.94-3.62-1.97-1.54-.16-3.02.9-3.8.9-.79 0-1.99-.88-3.28-.86-1.68.03-3.24.98-4.1 2.48-1.76 3.05-.45 7.56 1.25 10.03.83 1.2 1.83 2.56 3.13 2.51 1.26-.05 1.73-.81 3.25-.81s1.94.81 3.28.79c1.36-.02 2.22-1.22 3.04-2.44.96-1.4 1.35-2.76 1.37-2.83-.03-.01-2.62-1.01-2.65-4.04z"/><path d="M14.56 5.02c.69-.83 1.16-1.99 1.03-3.14-1 .04-2.2.66-2.92 1.49-.64.73-1.2 1.92-1.05 3.04 1.12.09 2.25-.56 2.94-1.39z"/></svg>';
 
-  var modal, panel, lastFocus, state = {};
+  var panel, lastFocus;
 
   function build() {
     modal = doc.createElement('div');
@@ -141,7 +269,7 @@
       var p = e.target.closest('[data-provider]');
       if (p) {
         track(state.mode === 'login' ? 'login_continue' : 'sign_up_continue', { method: p.getAttribute('data-provider'), plan: state.plan || 'free' });
-        if (state.plan) track(state.trial ? 'begin_trial' : 'begin_checkout', { plan: state.plan, billing: billing });
+        if (state.plan) track(state.trial ? 'begin_trial' : 'begin_checkout', { plan: state.plan, billing: billing, currency: currency, value: value(state.plan, billing) });
       }
       var sw = e.target.closest('[data-auth-mode]');
       if (sw) { e.preventDefault(); open({ mode: sw.getAttribute('data-auth-mode'), plan: state.plan, trial: state.trial }, true); }
@@ -158,7 +286,7 @@
       }
       input.removeAttribute('aria-invalid');
       track(state.mode === 'login' ? 'login_continue' : 'sign_up_continue', { method: 'email', plan: state.plan || 'free' });
-      if (state.plan) track(state.trial ? 'begin_trial' : 'begin_checkout', { plan: state.plan, billing: billing });
+      if (state.plan) track(state.trial ? 'begin_trial' : 'begin_checkout', { plan: state.plan, billing: billing, currency: currency, value: value(state.plan, billing) });
       window.location.href = webappUrl({ mode: state.mode, provider: 'email', email: email, plan: state.plan, billing: billing, trial: state.trial });
     });
 
@@ -178,11 +306,11 @@
   function planSummary(plan, withTrial) {
     var P = PLANS[plan];
     var price = priceText(plan, billing);
-    var priceHtml = price ? price : '<span class="price-tbd">' + CURRENCY + ' –</span>';
+    var priceHtml = price ? price : '<span class="price-tbd">' + currency + ' –</span>';
     var per = perText(billing);
     var end = trialEnd();
     var rows = withTrial
-      ? '<div><dt>Due today</dt><dd>' + CURRENCY + '0.00</dd></div>' +
+      ? '<div><dt>Due today</dt><dd>' + money(0, currency) + '</dd></div>' +
         '<div><dt>From ' + end + '</dt><dd>' + priceHtml + per + '</dd></div>'
       : '<div><dt>Due today</dt><dd>' + priceHtml + '</dd></div>' +
         '<div><dt>Then</dt><dd>' + priceHtml + per + '</dd></div>';
@@ -241,7 +369,7 @@
     var kind = a.getAttribute('data-auth');
     var plan = a.getAttribute('data-plan');
     var trial = a.hasAttribute('data-trial');
-    if (kind === 'plan') track('select_plan', { plan: plan, billing: billing, trial: trial });
+    if (kind === 'plan') track('select_plan', { plan: plan, billing: billing, trial: trial, currency: currency, value: value(plan, billing) });
     else track(kind === 'login' ? 'login_start' : 'sign_up_start', {});
     var menu = doc.querySelector('.menu-toggle[aria-expanded="true"]');
     if (menu) menu.click();
@@ -255,7 +383,7 @@
      the same terms as the plan cards. ?offer=show shows it straight away
      (for checking it). */
   var OFFER_KEY = 'cg-offer-seen';
-  var offer, offerLast, offerDone = false;
+  var offerLast, offerDone = false;
   function offerSeen() { try { return localStorage.getItem(OFFER_KEY) === '1'; } catch (e) { return true; } }
   function markOffer() { offerDone = true; try { localStorage.setItem(OFFER_KEY, '1'); } catch (e) {} }
 
@@ -282,7 +410,7 @@
       var go = e.target.closest('[data-offer-go]');
       if (go && !(e.metaKey || e.ctrlKey || e.shiftKey || e.button > 0)) {
         e.preventDefault();
-        track('select_plan', { plan: 'pro', billing: billing, trial: true, source: 'offer' });
+        track('select_plan', { plan: 'pro', billing: billing, trial: true, source: 'offer', currency: currency, value: value('pro', billing) });
         closeOffer(false);
         open({ mode: 'signup', plan: 'pro', trial: true });
       }
