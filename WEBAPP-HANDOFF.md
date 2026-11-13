@@ -123,3 +123,23 @@ Stripe webhook, with the Google Ads conversion labels the owner provides.
 
 Prices are placeholders on the website until the owner confirms them (one
 list in `site/assets/js/auth.js`, `PLANS`). Use the same figures in Stripe.
+
+### Stripe lookup keys (from the owner, 13 Nov 2026)
+
+The lookup keys follow the website's link parameters, so the web app can
+pick the price straight from them: `cg_{plan}_{billing}`
+(`plan=pro&billing=yearly` → `cg_pro_yearly`). Prefer looking prices up
+by these keys (`prices.list` with `lookup_keys`) over hard-coding IDs.
+
+| Plan | Billing | Lookup key | ID the owner sent |
+|---|---|---|---|
+| Pro | monthly | `cg_pro_monthly` | `to_1UaYby01i6NoLKsT8CzVcD3j` |
+| Pro | yearly | `cg_pro_yearly` | `to_1UaYiY01i6NoLKsThtQmqSWB` |
+| Family | monthly | `cg_family_monthly` | `to_1UaYfH01i6NoLKsTWweJ8CBQ` |
+| Family | yearly | `cg_family_yearly` | `to_1UaYk301i6NoLKsT5JXhCiWq` |
+| Plus | monthly | `cg_plus_monthly` | not sent yet |
+| Plus | yearly | `cg_plus_yearly` | not sent yet |
+
+The IDs were copied from a screenshot, so check each one against the
+Stripe dashboard before using it. Stripe price IDs normally begin with
+`price_`; these begin with `to_`, which needs confirming.
